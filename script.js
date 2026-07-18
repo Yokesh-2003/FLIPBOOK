@@ -255,8 +255,8 @@ function initializeBook() {
         usePortrait: true,     // Switch to single-page view on portrait viewports
         flippingTime: 800,     // 800ms for a more responsive, natural paper flip
         maxShadowOpacity: 0.3, // Stronger shadow opacity to make the paper bend/fold more visible
-        swipeDistance: 15,     // Lower threshold for smoother touch triggers
-        mobileScrollSupport: true
+        swipeDistance: 10,     // Very low threshold for easy swipe on mobile
+        mobileScrollSupport: false // MUST be false — true blocks touch swipe page flipping
     });
 
     // Load pages from existing HTML (4 pages total)
@@ -264,7 +264,6 @@ function initializeBook() {
 
     // Force all pages (including covers) to be soft density to ensure they bend like paper
     applySoftDensity();
-    updatePageVisibility('read');
 
     // Update controls and layout state
     updatePageIndicator();
@@ -276,20 +275,15 @@ function initializeBook() {
         updatePageIndicator();
         updateBookTranslation();
         applySoftDensity();
-        updatePageVisibility('read');
     });
 
     pageFlipInstance.on('changeOrientation', (e) => {
         updatePageIndicator();
         updateBookTranslation();
         applySoftDensity();
-        updatePageVisibility('read');
     });
 
     pageFlipInstance.on('changeState', (e) => {
-        setTimeout(() => {
-            updatePageVisibility(e.data);
-        }, 30);
         if (e.data === 'fold_corner') {
             const bookElement = document.getElementById('book');
             if (bookElement) {
@@ -325,99 +319,6 @@ function applySoftDensity() {
     }
 }
 
-function updatePageVisibility(state = 'read') {
-    if (!pageFlipInstance) return;
-
-    const pages = document.querySelectorAll('.page');
-
-    // In 'read' state, hide inactive pages to prevent them showing through the transparent wrappers
-    const currentIndex = pageFlipInstance.getCurrentPageIndex();
-    const orientation = pageFlipInstance.getOrientation();
-
-    // Reset any overrides
-    pages.forEach((page, index) => {
-        page.style.removeProperty('visibility');
-        page.style.removeProperty('opacity');
-        const pageObj = pageFlipInstance.getPage(index);
-        if (pageObj && pageObj.copiedElement) {
-            pageObj.copiedElement.style.removeProperty('visibility');
-            pageObj.copiedElement.style.removeProperty('opacity');
-        }
-    });
-
-    pages.forEach((page, index) => {
-        let isVisible = false;
-
-        if (orientation === 'landscape') {
-            if (currentIndex === 0) {
-                // Front Cover: only Page 1 (index 0) is visible
-                isVisible = (index === 0);
-            } else if (currentIndex === pages.length - 1) {
-                // Back Cover: only Page 4 (index 3) is visible
-                isVisible = (index === pages.length - 1);
-            } else {
-                // Inside spread: pages 2 and 3 (index 1 and 2) are visible
-                isVisible = (index === 1 || index === 2);
-            }
-        } else {
-            // Portrait mode: only the current page is visible
-            isVisible = (index === currentIndex);
-        }
-
-        if (isVisible) {
-            page.style.visibility = 'visible';
-            page.style.opacity = '1';
-        } else {
-            page.style.visibility = 'hidden';
-            page.style.opacity = '0';
-        }
-    });
-
-    // Surgical fix: Hide the page that is drawn in the empty area during cover/back-cover transitions
-    if (orientation === 'landscape' && (state === 'flipping' || state === 'user_fold')) {
-        try {
-            const flipController = pageFlipInstance.getFlipController();
-            const calc = flipController ? flipController.getCalculation() : null;
-            const direction = calc ? calc.getDirection() : 0; // 0 = forward, 1 = backward
-
-            // Determine if we need to hide Page 2 (index 1) on the left
-            const shouldHidePage2 = 
-                (direction === 0 && currentIndex === 0) || // Forward from Cover
-                (direction === 1 && currentIndex === 1);   // Backward to Cover
-
-            // Determine if we need to hide Page 3 (index 2) on the right
-            const shouldHidePage3 = 
-                (direction === 0 && currentIndex === 1) || // Forward to Back Cover
-                (direction === 1 && currentIndex === 3);   // Backward from Back Cover
-
-            if (shouldHidePage2) {
-                const p2 = pageFlipInstance.getPage(1);
-                if (p2) {
-                    p2.element.style.setProperty('visibility', 'hidden', 'important');
-                    p2.element.style.setProperty('opacity', '0', 'important');
-                    if (p2.copiedElement) {
-                        p2.copiedElement.style.setProperty('visibility', 'hidden', 'important');
-                        p2.copiedElement.style.setProperty('opacity', '0', 'important');
-                    }
-                }
-            }
-
-            if (shouldHidePage3) {
-                const p3 = pageFlipInstance.getPage(2);
-                if (p3) {
-                    p3.element.style.setProperty('visibility', 'hidden', 'important');
-                    p3.element.style.setProperty('opacity', '0', 'important');
-                    if (p3.copiedElement) {
-                        p3.copiedElement.style.setProperty('visibility', 'hidden', 'important');
-                        p3.copiedElement.style.setProperty('opacity', '0', 'important');
-                    }
-                }
-            }
-        } catch (e) {
-            console.warn("Could not apply surgical transition fix:", e);
-        }
-    }
-}
 
 function resizeBook() {
     if (!pageFlipInstance) return;
@@ -437,7 +338,6 @@ function resizeBook() {
     pageFlipInstance.update();
     applySoftDensity();
     updateBookTranslation();
-    updatePageVisibility('read');
 }
 
 function updateBookTranslation() {
@@ -596,42 +496,41 @@ function setupControls() {
     // Setup panning on zoomed book
     setupPanning();
 
-    // Review and Brochure buttons controls
-    const reviewBtn = document.getElementById('review-btn');
-    const brochureBtn = document.getElementById('brochure-btn');
+    // Review and Brochure buttons controls (both in footer AND inside reviews page)
+    const reviewBtn     = document.getElementById('review-btn');
+    const brochureBtn   = document.getElementById('brochure-btn');
+    const reviewBtn2    = document.getElementById('review-btn-2');
+    const brochureBtn2  = document.getElementById('brochure-btn-2');
 
-    if (reviewBtn) {
-        reviewBtn.addEventListener('click', (e) => {
-            e.preventDefault();
+    function setActiveView(view) {
+        // view: 'brochure' or 'review'
+        if (view === 'review') {
             document.body.classList.add('show-reviews');
-            brochureBtn.classList.remove('active');
-            reviewBtn.classList.add('active');
-
-            // Close sidebar if open
-            const sidebar = document.getElementById('sidebar');
-            const sidebarOverlay = document.getElementById('sidebar-overlay');
-            if (sidebar && sidebar.classList.contains('open')) {
-                sidebar.classList.remove('open');
-                sidebarOverlay.classList.remove('visible');
-            }
-            
+            [reviewBtn, reviewBtn2].forEach(b => b && b.classList.add('active'));
+            [brochureBtn, brochureBtn2].forEach(b => b && b.classList.remove('active'));
             // Recalculate track layout when switching page
-            setTimeout(() => {
-                if (window.refreshReviewsCarousel) {
-                    window.refreshReviewsCarousel();
-                }
-            }, 50);
-        });
+            setTimeout(() => { if (window.refreshReviewsCarousel) window.refreshReviewsCarousel(); }, 50);
+        } else {
+            document.body.classList.remove('show-reviews');
+            [brochureBtn, brochureBtn2].forEach(b => b && b.classList.add('active'));
+            [reviewBtn, reviewBtn2].forEach(b => b && b.classList.remove('active'));
+        }
+        // Close sidebar if open
+        const sidebar = document.getElementById('sidebar');
+        const sidebarOverlay = document.getElementById('sidebar-overlay');
+        if (sidebar && sidebar.classList.contains('open')) {
+            sidebar.classList.remove('open');
+            sidebarOverlay && sidebarOverlay.classList.remove('visible');
+        }
     }
 
-    if (brochureBtn) {
-        brochureBtn.addEventListener('click', (e) => {
-            e.preventDefault();
-            document.body.classList.remove('show-reviews');
-            reviewBtn.classList.remove('active');
-            brochureBtn.classList.add('active');
-        });
-    }
+    [reviewBtn, reviewBtn2].forEach(btn => {
+        if (btn) btn.addEventListener('click', (e) => { e.preventDefault(); setActiveView('review'); });
+    });
+
+    [brochureBtn, brochureBtn2].forEach(btn => {
+        if (btn) btn.addEventListener('click', (e) => { e.preventDefault(); setActiveView('brochure'); });
+    });
 
     // Initialize Reviews Carousel
     initReviewsCarousel();

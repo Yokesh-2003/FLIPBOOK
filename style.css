@@ -20,7 +20,7 @@
     /* Softer premium shadow for light bg */
     --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     --header-height: 0px;
-    --footer-height: 40px;
+    --footer-height: 85px;
 }
 
 * {
@@ -620,8 +620,8 @@ body {
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    gap: 0;
-    padding: 0 24px;
+    gap: 10px;
+    padding: 8px 24px;
     z-index: 100;
 }
 
@@ -713,7 +713,7 @@ body {
 @media (max-width: 767px) {
     :root {
         --header-height: 0px;
-        --footer-height: 40px;
+        --footer-height: 80px;
     }
 
     .nav-arrow-btn {
@@ -739,9 +739,14 @@ body {
         justify-content: center;
     }
 
+    .glass-header {
+        top: 20px !important;
+        right: 15px !important;
+    }
+
     .zoom-controls-panel {
         right: 15px;
-        top: 75px;
+        top: 80px;
         padding: 6px 12px;
         gap: 10px;
     }
@@ -755,12 +760,6 @@ body {
         width: 200px;
     }
 
-    .top-left-actions {
-        top: 15px;
-        left: 15px;
-        gap: 6px;
-    }
-
     .action-btn {
         padding: 6px 10px;
         font-size: 0.8rem;
@@ -768,13 +767,12 @@ body {
     }
 }
 
-/* Top Left Action Buttons */
+/* Brochure / Review Toggle Buttons (below the flipbook) */
 .top-left-actions {
-    position: absolute;
-    top: 20px;
-    left: 20px;
+    position: static;
     display: flex;
     gap: 8px;
+    justify-content: center;
     z-index: 100;
 }
 
@@ -841,6 +839,9 @@ body {
 
 body.show-reviews .reviews-page-section {
     display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
 }
 
 body.show-reviews .viewport,
@@ -848,6 +849,16 @@ body.show-reviews .glass-header,
 body.show-reviews #zoom-controls,
 body.show-reviews .footer-controls {
     display: none !important;
+}
+
+/* Nav buttons at the bottom of reviews page */
+.reviews-nav-buttons {
+    display: flex;
+    gap: 8px;
+    justify-content: center;
+    padding: 10px 0 4px;
+    margin-top: auto;
+    width: 100%;
 }
 
 /* Reviews Page Content styling */
@@ -1019,15 +1030,14 @@ body.show-reviews .footer-controls {
 /* Responsive adjustments for reviews */
 @media (max-width: 767px) {
     .reviews-page-section {
-        padding: 20px;
+        padding: 30px 20px 20px;
         height: 100vh;
-        justify-content: flex-start;
-        padding-top: 80px; /* Leave space for top-left-actions */
+        justify-content: center;
     }
     
     .reviews-title {
         font-size: 1.6rem;
-        margin-bottom: 25px;
+        margin-bottom: 16px;
     }
 
     .reviews-carousel-wrapper {
