@@ -1,0 +1,746 @@
+/* ==========================================================================
+   CSS CUSTOM VARIABLES & GENERAL RESET (LIGHT MODE - PLAIN & WHITE)
+   ========================================================================== */
+:root {
+    --bg-gradient: #ffffff; /* Plain and white */
+    --accent-color: #f59e0b; /* Golden accent like Heyzine */
+    --accent-hover: #d97706;
+    --text-primary: #0f172a; /* Slate-900 (Dark text) */
+    --text-secondary: #475569; /* Slate-600 (Medium text) */
+    --glass-bg: rgba(255, 255, 255, 0.8); /* Light glassmorphism */
+    --glass-border: rgba(0, 0, 0, 0.08); /* Darker borders for contrast */
+    --glass-blur: blur(20px);
+    --shadow-premium: 0 20px 50px -12px rgba(0, 0, 0, 0.15); /* Softer premium shadow for light bg */
+    --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    --header-height: 0px;
+    --footer-height: 40px;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    -webkit-tap-highlight-color: transparent;
+}
+
+body {
+    font-family: 'Outfit', 'Montserrat', sans-serif;
+    background: var(--bg-gradient);
+    color: var(--text-primary);
+    overflow: hidden;
+    height: 100vh;
+    width: 100vw;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+/* ==========================================================================
+   PREMIUM LOADER ANIMATION
+   ========================================================================== */
+.loader-container {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: #ffffff;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 9999;
+    transition: opacity 0.5s ease, visibility 0.5s ease;
+}
+
+.loader-container.fade-out {
+    opacity: 0;
+    visibility: hidden;
+}
+
+.loader-content {
+    text-align: center;
+}
+
+/* Book opening animation */
+.book-loader {
+    width: 60px;
+    height: 45px;
+    position: relative;
+    margin: 0 auto 25px auto;
+    perspective: 150px;
+}
+
+.book-page {
+    width: 30px;
+    height: 45px;
+    background: var(--accent-color);
+    position: absolute;
+    top: 0;
+    right: 0;
+    transform-origin: left center;
+    border-radius: 0 4px 4px 0;
+    box-shadow: inset 0px -4px 0px rgba(0, 0, 0, 0.1);
+}
+
+.book-page:nth-child(1) {
+    transform: rotateY(0deg);
+    animation: page-flip-right 1.4s infinite linear;
+}
+
+.book-page:nth-child(2) {
+    transform: rotateY(0deg);
+    animation: page-flip-right 1.4s infinite linear 0.45s;
+    background: #fbbf24;
+}
+
+.book-page:nth-child(3) {
+    transform: rotateY(0deg);
+    animation: page-flip-right 1.4s infinite linear 0.9s;
+    background: #f59e0b;
+}
+
+@keyframes page-flip-right {
+    0% {
+        transform: rotateY(0deg);
+        z-index: 3;
+    }
+    50% {
+        transform: rotateY(-180deg);
+        z-index: 1;
+    }
+    100% {
+        transform: rotateY(-180deg);
+        z-index: 1;
+    }
+}
+
+.loader-content h2 {
+    font-size: 1.5rem;
+    font-weight: 600;
+    letter-spacing: 0.15em;
+    color: var(--text-primary);
+    margin-bottom: 8px;
+}
+
+.loader-content p {
+    font-size: 0.9rem;
+    color: var(--text-secondary);
+    letter-spacing: 0.05em;
+}
+
+/* ==========================================================================
+   APP STRUCTURE & VIEWPORT
+   ========================================================================== */
+.app-container {
+    display: flex;
+    flex-direction: column;
+    width: 100vw;
+    height: 100vh;
+    position: relative;
+}
+
+.viewport {
+    flex: 1;
+    height: calc(100vh - var(--header-height) - var(--footer-height));
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    position: relative;
+    padding: 0 10px;
+    z-index: 10;
+}
+
+/* ==========================================================================
+   GLASSMORPHIC TOP HEADER (LIGHT MODE)
+   ========================================================================== */
+.glass-header {
+    position: absolute !important;
+    top: 30px !important;
+    left: 20px !important;
+    right: 20px !important;
+    height: auto !important;
+    background: transparent !important;
+    border-bottom: none !important;
+    display: flex !important;
+    justify-content: space-between !important;
+    align-items: flex-start !important;
+    padding: 0 !important;
+    pointer-events: none !important; /* Let clicks pass to the book underneath */
+    z-index: 100 !important;
+}
+
+.header-left, .header-right {
+    pointer-events: auto !important; /* Enable click interaction on the controls */
+}
+
+.ctrl-btn {
+    background: rgba(255, 255, 255, 0.9) !important;
+    border: 1px solid var(--glass-border) !important;
+    color: var(--text-primary) !important;
+    padding: 10px 20px !important;
+    border-radius: 30px !important;
+    font-family: inherit !important;
+    font-size: 0.85rem !important;
+    font-weight: 600 !important;
+    cursor: pointer !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    gap: 8px !important;
+    transition: var(--transition-smooth) !important;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05) !important;
+}
+
+.ctrl-btn i {
+    font-size: 1.05rem;
+    color: var(--accent-color);
+}
+
+.ctrl-btn:hover {
+    background: #ffffff;
+    border-color: rgba(0, 0, 0, 0.15);
+    transform: scale(1.05);
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.08);
+}
+
+.ctrl-btn:active {
+    transform: scale(0.95);
+}
+
+.header-right {
+    display: flex !important;
+    flex-direction: column !important; /* Stack controls vertically */
+    gap: 12px !important;
+}
+
+.header-right .ctrl-btn {
+    padding: 0 !important;
+    width: 44px !important;
+    height: 44px !important;
+    border-radius: 50% !important; /* Perfect circles */
+    justify-content: center !important;
+}
+
+.header-right .ctrl-btn span {
+    display: none !important;
+}
+
+/* ==========================================================================
+   NAVIGATION ARROWS (LIGHT MODE)
+   ========================================================================== */
+.nav-arrow-btn {
+    background: rgba(255, 255, 255, 0.85);
+    backdrop-filter: var(--glass-blur);
+    -webkit-backdrop-filter: var(--glass-blur);
+    border: 1px solid var(--glass-border);
+    color: var(--text-primary);
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    cursor: pointer;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 1.25rem;
+    z-index: 50;
+    transition: var(--transition-smooth);
+    opacity: 0.7;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
+}
+
+.nav-arrow-btn:hover {
+    background: var(--accent-color);
+    border-color: var(--accent-color);
+    color: #ffffff;
+    transform: scale(1.1);
+    opacity: 1;
+    box-shadow: 0 0 20px rgba(245, 158, 11, 0.3);
+}
+
+.nav-arrow-btn:active {
+    transform: scale(0.95);
+}
+
+.nav-arrow-btn.disabled {
+    opacity: 0 !important;
+    pointer-events: none;
+}
+
+/* ==========================================================================
+   BOOK CONTAINER & TRANSFORMS
+   ========================================================================== */
+.zoom-viewport {
+    flex: 1;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden; /* Hide scrollbars by default to prevent layout shift during translation */
+    position: relative;
+    padding: 5px;
+    /* Custom Scrollbars inside zoom scroll viewport */
+    scrollbar-width: thin;
+    scrollbar-color: rgba(0, 0, 0, 0.15) transparent;
+}
+
+.zoom-viewport.zoomed {
+    overflow: auto; /* Enable scrollbars only when zoomed */
+}
+
+.zoom-viewport::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+}
+.zoom-viewport::-webkit-scrollbar-thumb {
+    background: rgba(0, 0, 0, 0.15);
+    border-radius: 3px;
+}
+
+.book-container {
+    position: relative;
+    transition: transform 0.1s ease-out;
+    transform-origin: center center;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+/* Classes applied by script when zoom is active */
+.zoomed {
+    cursor: grab;
+}
+.zoomed:active {
+    cursor: grabbing;
+}
+
+#book {
+    box-shadow: none;
+    background: transparent;
+    transition: transform 1.0s cubic-bezier(0.25, 1, 0.5, 1), opacity 0.3s;
+}
+
+/* Page Styling for StPageFlip */
+.page {
+    background: #ffffff;
+    overflow: hidden;
+}
+
+.page-content {
+    width: 100%;
+    height: 100%;
+    position: relative;
+    overflow: hidden;
+}
+
+.page-content img {
+    width: 100%;
+    height: 100%;
+    object-fit: fill; /* Displays the full landscape image without cropping */
+    display: block;
+    user-select: none;
+    -webkit-user-drag: none;
+}
+
+/* Spine shadow effect for book center crease */
+.page-content::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    width: 50px;
+    pointer-events: none;
+    z-index: 10;
+}
+
+/* Force StPageFlip internal wrappers and empty cover slots to be transparent */
+#book > div:not(.page),
+.stPageFlip {
+    background: transparent !important;
+    background-color: transparent !important;
+    box-shadow: none !important;
+}
+
+.page {
+    background: #ffffff;
+    overflow: hidden;
+    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.05);
+}
+
+/* Left page in spread (even children in HTML: index 1, 3 -> Page 2, Page 4) */
+.page:nth-child(even) .page-content::after {
+    right: 0;
+    left: auto;
+    background: linear-gradient(to left, rgba(0, 0, 0, 0.12) 0%, rgba(0, 0, 0, 0.03) 20%, rgba(0, 0, 0, 0) 100%);
+}
+
+/* Right page in spread (odd children in HTML: index 0, 2 -> Page 1, Page 3) */
+.page:nth-child(odd) .page-content::after {
+    left: 0;
+    right: auto;
+    background: linear-gradient(to right, rgba(0, 0, 0, 0.12) 0%, rgba(0, 0, 0, 0.03) 20%, rgba(0, 0, 0, 0) 100%);
+}
+
+/* ==========================================================================
+   FLOATING ZOOM PANEL
+   ========================================================================== */
+.zoom-controls-panel {
+    position: fixed;
+    right: 25px;
+    top: 90px;
+    background: var(--glass-bg);
+    backdrop-filter: var(--glass-blur);
+    -webkit-backdrop-filter: var(--glass-blur);
+    border: 1px solid var(--glass-border);
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    padding: 8px 16px;
+    border-radius: 40px;
+    z-index: 999;
+    box-shadow: var(--shadow-premium);
+    animation: slide-in-zoom 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    transition: var(--transition-smooth);
+}
+
+.zoom-controls-panel.hidden {
+    opacity: 0;
+    pointer-events: none;
+    transform: translateY(-20px);
+}
+
+@keyframes slide-in-zoom {
+    from {
+        opacity: 0;
+        transform: translateY(-20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.zoom-ctrl {
+    background: rgba(0, 0, 0, 0.05);
+    border: none;
+    color: var(--text-primary);
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    cursor: pointer;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 0.85rem;
+    transition: var(--transition-smooth);
+}
+
+.zoom-ctrl:hover {
+    background: var(--accent-color);
+    color: #ffffff;
+}
+
+#zoom-level {
+    font-size: 0.85rem;
+    font-weight: 600;
+    min-width: 45px;
+    text-align: center;
+    letter-spacing: 0.05em;
+    color: var(--text-primary);
+}
+
+/* ==========================================================================
+   TABLE OF CONTENTS (SIDEBAR PANEL - LIGHT MODE)
+   ========================================================================== */
+.sidebar {
+    position: fixed;
+    top: 0;
+    left: -320px;
+    width: 320px;
+    height: 100vh;
+    background: rgba(255, 255, 255, 0.9);
+    backdrop-filter: var(--glass-blur);
+    -webkit-backdrop-filter: var(--glass-blur);
+    border-right: 1px solid var(--glass-border);
+    z-index: 2000;
+    transition: left 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 15px 0 40px rgba(0, 0, 0, 0.08);
+    display: flex;
+    flex-direction: column;
+}
+
+.sidebar.open {
+    left: 0;
+}
+
+.sidebar-header {
+    padding: 24px;
+    border-bottom: 1px solid var(--glass-border);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.sidebar-header h3 {
+    font-size: 1.15rem;
+    font-weight: 600;
+    letter-spacing: 0.05em;
+    color: var(--text-primary);
+}
+
+#close-sidebar-btn {
+    background: transparent;
+    border: none;
+    color: var(--text-secondary);
+    font-size: 1.25rem;
+    cursor: pointer;
+    transition: var(--transition-smooth);
+}
+
+#close-sidebar-btn:hover {
+    color: var(--text-primary);
+    transform: rotate(90deg);
+}
+
+.sidebar-thumbnails {
+    flex: 1;
+    overflow-y: auto;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    scrollbar-width: thin;
+    scrollbar-color: rgba(0, 0, 0, 0.1) transparent;
+}
+
+.sidebar-thumbnails::-webkit-scrollbar {
+    width: 4px;
+}
+.sidebar-thumbnails::-webkit-scrollbar-thumb {
+    background: rgba(0, 0, 0, 0.1);
+    border-radius: 2px;
+}
+
+.thumbnail-item {
+    cursor: pointer;
+    border-radius: 12px;
+    padding: 8px;
+    background: rgba(0, 0, 0, 0.02);
+    border: 1px solid rgba(0, 0, 0, 0.04);
+    text-align: center;
+    transition: var(--transition-smooth);
+}
+
+.thumbnail-img-wrapper {
+    width: 100%;
+    aspect-ratio: 1.4;
+    border-radius: 8px;
+    overflow: hidden;
+    margin-bottom: 8px;
+    background: #f1f5f9;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
+}
+
+.thumbnail-item img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.5s ease;
+}
+
+.thumbnail-item span {
+    font-size: 0.8rem;
+    font-weight: 500;
+    color: var(--text-secondary);
+    transition: var(--transition-smooth);
+}
+
+.thumbnail-item:hover {
+    background: rgba(0, 0, 0, 0.05);
+    border-color: rgba(245, 158, 11, 0.3);
+    transform: translateY(-3px);
+}
+
+.thumbnail-item:hover img {
+    transform: scale(1.08);
+}
+
+.thumbnail-item.active {
+    background: rgba(245, 158, 11, 0.06);
+    border-color: var(--accent-color);
+    box-shadow: 0 0 15px rgba(245, 158, 11, 0.1);
+}
+
+.thumbnail-item.active span {
+    color: var(--accent-color);
+    font-weight: 600;
+}
+
+/* Sidebar Overlay */
+.sidebar-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(0, 0, 0, 0.3);
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
+    opacity: 0;
+    visibility: hidden;
+    z-index: 1500;
+    transition: var(--transition-smooth);
+}
+
+.sidebar-overlay.visible {
+    opacity: 1;
+    visibility: visible;
+}
+
+/* ==========================================================================
+   FOOTER NAVIGATION CONTROLS (SLIDER & INDICATORS - LIGHT MODE)
+   ========================================================================== */
+.footer-controls {
+    height: var(--footer-height);
+    background: transparent;
+    border-top: none;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 0;
+    padding: 0 24px;
+    z-index: 100;
+}
+
+.slider-container {
+    position: relative;
+    width: 320px;
+    max-width: 80%;
+    display: flex;
+    align-items: center;
+}
+
+/* Custom styled range slider */
+.page-slider {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 100%;
+    height: 6px;
+    border-radius: 3px;
+    background: rgba(0, 0, 0, 0.1);
+    outline: none;
+    cursor: pointer;
+    z-index: 2;
+    transition: var(--transition-smooth);
+}
+
+.page-slider:hover {
+    background: rgba(0, 0, 0, 0.15);
+}
+
+/* Slider progress fill (colored dynamically via script) */
+.slider-progress {
+    position: absolute;
+    left: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    height: 6px;
+    border-radius: 3px 0 0 3px;
+    background: var(--accent-color);
+    pointer-events: none;
+    z-index: 1;
+    width: 0; /* Updated via JS */
+}
+
+/* Custom Slider Thumb */
+.page-slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    background: var(--accent-color);
+    cursor: pointer;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.12);
+    transition: transform 0.1s ease;
+}
+
+.page-slider::-webkit-slider-thumb:hover {
+    transform: scale(1.3);
+    box-shadow: 0 0 12px var(--accent-color);
+}
+
+.page-slider::-moz-range-thumb {
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    background: var(--accent-color);
+    cursor: pointer;
+    border: none;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.12);
+    transition: transform 0.1s ease;
+}
+
+.page-slider::-moz-range-thumb:hover {
+    transform: scale(1.3);
+    box-shadow: 0 0 12px var(--accent-color);
+}
+
+.page-indicator {
+    font-size: 0.9rem;
+    font-weight: 500;
+    color: var(--text-secondary);
+    letter-spacing: 0.05em;
+}
+
+/* ==========================================================================
+   RESPONSIVENESS ADJUSTMENTS
+   ========================================================================== */
+@media (max-width: 767px) {
+    :root {
+        --header-height: 0px;
+        --footer-height: 40px;
+    }
+    
+    .nav-arrow-btn {
+        width: 44px;
+        height: 44px;
+        font-size: 1rem;
+        background: rgba(255, 255, 255, 0.85);
+    }
+    
+    .viewport {
+        padding: 0 10px;
+    }
+    
+    .book-title {
+        font-size: 1.1rem;
+    }
+    
+    .ctrl-btn span {
+        display: none;
+    }
+    
+    .ctrl-btn {
+        padding: 8px;
+        width: 36px;
+        height: 36px;
+        justify-content: center;
+    }
+    
+    .zoom-controls-panel {
+        right: 15px;
+        top: 75px;
+        padding: 6px 12px;
+        gap: 10px;
+    }
+    
+    .zoom-ctrl {
+        width: 28px;
+        height: 28px;
+    }
+    
+    .slider-container {
+        width: 200px;
+    }
+}
