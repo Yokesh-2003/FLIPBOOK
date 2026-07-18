@@ -8,10 +8,23 @@ let imageWidth = 0;
 let imageHeight = 0;
 let isDragging = false;
 let startX, startY, scrollLeft, scrollTop;
+let mouseEventY = 0; // Track mouse Y coordinate globally
+
+// Track mouse position globally
+document.addEventListener('mousemove', (e) => {
+    mouseEventY = e.clientY;
+});
 
 // Preload user's custom page turn sound effect (page.mp3)
 const pageFlipAudio = new Audio("page.mp3");
 pageFlipAudio.preload = "auto";
+
+// Preload corner hover sound effects
+const topAudio = new Audio("top.mp3");
+topAudio.preload = "auto";
+
+const bottomAudio = new Audio("bottom.mp3");
+bottomAudio.preload = "auto";
 
 // Check if audio fails to load
 let useSynthesizedAudio = false;
@@ -24,8 +37,8 @@ pageFlipAudio.addEventListener('error', () => {
  * Triggers the page turning sound effect
  */
 function playPageTurnSound() {
-    if (!soundEnabled) return;
-    
+    if (!soundEnabled || document.body.classList.contains('show-reviews')) return;
+
     if (!useSynthesizedAudio) {
         pageFlipAudio.currentTime = 0;
         pageFlipAudio.play().catch(err => {
@@ -38,6 +51,28 @@ function playPageTurnSound() {
 }
 
 /**
+ * Plays the top corner hover sound effect
+ */
+function playTopSound() {
+    if (!soundEnabled || document.body.classList.contains('show-reviews')) return;
+    topAudio.currentTime = 0;
+    topAudio.play().catch(err => {
+        console.warn("Failed to play top.mp3:", err);
+    });
+}
+
+/**
+ * Plays the bottom corner hover sound effect
+ */
+function playBottomSound() {
+    if (!soundEnabled || document.body.classList.contains('show-reviews')) return;
+    bottomAudio.currentTime = 0;
+    bottomAudio.play().catch(err => {
+        console.warn("Failed to play bottom.mp3:", err);
+    });
+}
+
+/**
  * Fallback Web Audio API synthesizer for realistic page rustling/whoosh sound
  */
 function synthesizePageFlipSound() {
@@ -45,43 +80,43 @@ function synthesizePageFlipSound() {
         const AudioContext = window.AudioContext || window.webkitAudioContext;
         if (!AudioContext) return;
         const ctx = new AudioContext();
-        
+
         const duration = 0.35; // duration in seconds
         const bufferSize = ctx.sampleRate * duration;
         const buffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
         const data = buffer.getChannelData(0);
-        
+
         // Fill buffer with white noise
         for (let i = 0; i < bufferSize; i++) {
             data[i] = Math.random() * 2 - 1;
         }
-        
+
         const noise = ctx.createBufferSource();
         noise.buffer = buffer;
-        
+
         // Lowpass filter for paper sweep effect
         const filter = ctx.createBiquadFilter();
         filter.type = 'lowpass';
         filter.Q.value = 1.2;
-        
+
         // Volume Gain Node
         const gain = ctx.createGain();
-        
+
         noise.connect(filter);
         filter.connect(gain);
         gain.connect(ctx.destination);
-        
+
         const now = ctx.currentTime;
-        
+
         // Frequency sweep from 1500Hz to 300Hz (simulating paper curl and release)
         filter.frequency.setValueAtTime(1500, now);
         filter.frequency.exponentialRampToValueAtTime(300, now + duration);
-        
+
         // Volume envelope (fade in fast, fade out)
         gain.gain.setValueAtTime(0.001, now);
         gain.gain.linearRampToValueAtTime(0.12, now + 0.05); // volume peak
         gain.gain.exponentialRampToValueAtTime(0.001, now + duration);
-        
+
         noise.start(now);
         noise.stop(now + duration);
     } catch (e) {
@@ -102,18 +137,18 @@ document.addEventListener("DOMContentLoaded", () => {
 
     const imagesToLoad = ['1.png', '2.png', '3.png', '4.png'];
     let loadedCount = 0;
-    
+
     // First load image 1 to extract resolution
     const firstImg = new Image();
     firstImg.src = imagesToLoad[0];
     firstImg.onload = () => {
         imageWidth = firstImg.naturalWidth;
         imageHeight = firstImg.naturalHeight;
-        
+
         // Proceed to load other images
         loadRemainingImages();
     };
-    
+
     firstImg.onerror = () => {
         console.error("Failed to load cover image. Falling back to default dimensions.");
         imageWidth = 1000;  // Portrait page width
@@ -167,22 +202,22 @@ function calculateBookSize() {
     const viewport = document.getElementById('zoom-viewport');
     const viewportWidth = viewport.clientWidth;
     const viewportHeight = viewport.clientHeight;
-    
+
     const singleAspectRatio = imageWidth / imageHeight;
-    
+
     // Check if the screen width/height is in landscape and wide enough for two-page spread
     const isLandscape = viewportWidth >= 768 && (viewportWidth > viewportHeight);
     const targetRatio = isLandscape ? (singleAspectRatio * 2) : singleAspectRatio;
-    
+
     // Leave safe paddings (moderate margin to reduce size slightly)
     const marginHorizontal = isLandscape ? 80 : 24;
     const marginVertical = 50;
-    
+
     const maxWidth = viewportWidth - marginHorizontal;
     const maxHeight = viewportHeight - marginVertical;
-    
+
     let width, height;
-    
+
     if (maxWidth / maxHeight > targetRatio) {
         height = maxHeight;
         width = maxHeight * targetRatio;
@@ -190,7 +225,7 @@ function calculateBookSize() {
         width = maxWidth;
         height = maxWidth / targetRatio;
     }
-    
+
     return {
         width: Math.round(width),
         height: Math.round(height),
@@ -201,7 +236,7 @@ function calculateBookSize() {
 function initializeBook() {
     const sizes = calculateBookSize();
     const bookContainer = document.getElementById('book-container');
-    
+
     // Set initial size of the container
     bookContainer.style.width = `${sizes.width}px`;
     bookContainer.style.height = `${sizes.height}px`;
@@ -252,7 +287,21 @@ function initializeBook() {
     });
 
     pageFlipInstance.on('changeState', (e) => {
-        updatePageVisibility(e.data);
+        setTimeout(() => {
+            updatePageVisibility(e.data);
+        }, 30);
+        if (e.data === 'fold_corner') {
+            const bookElement = document.getElementById('book');
+            if (bookElement) {
+                const rect = bookElement.getBoundingClientRect();
+                const centerY = rect.top + rect.height / 2;
+                if (mouseEventY < centerY) {
+                    playTopSound();
+                } else {
+                    playBottomSound();
+                }
+            }
+        }
     });
 }
 
@@ -278,16 +327,27 @@ function applySoftDensity() {
 
 function updatePageVisibility(state = 'read') {
     if (!pageFlipInstance) return;
-    
+
     const pages = document.querySelectorAll('.page');
-    
+
     // In 'read' state, hide inactive pages to prevent them showing through the transparent wrappers
     const currentIndex = pageFlipInstance.getCurrentPageIndex();
     const orientation = pageFlipInstance.getOrientation();
-    
+
+    // Reset any overrides
+    pages.forEach((page, index) => {
+        page.style.removeProperty('visibility');
+        page.style.removeProperty('opacity');
+        const pageObj = pageFlipInstance.getPage(index);
+        if (pageObj && pageObj.copiedElement) {
+            pageObj.copiedElement.style.removeProperty('visibility');
+            pageObj.copiedElement.style.removeProperty('opacity');
+        }
+    });
+
     pages.forEach((page, index) => {
         let isVisible = false;
-        
+
         if (orientation === 'landscape') {
             if (currentIndex === 0) {
                 // Front Cover: only Page 1 (index 0) is visible
@@ -303,7 +363,7 @@ function updatePageVisibility(state = 'read') {
             // Portrait mode: only the current page is visible
             isVisible = (index === currentIndex);
         }
-        
+
         if (isVisible) {
             page.style.visibility = 'visible';
             page.style.opacity = '1';
@@ -312,11 +372,56 @@ function updatePageVisibility(state = 'read') {
             page.style.opacity = '0';
         }
     });
+
+    // Surgical fix: Hide the page that is drawn in the empty area during cover/back-cover transitions
+    if (orientation === 'landscape' && (state === 'flipping' || state === 'user_fold')) {
+        try {
+            const flipController = pageFlipInstance.getFlipController();
+            const calc = flipController ? flipController.getCalculation() : null;
+            const direction = calc ? calc.getDirection() : 0; // 0 = forward, 1 = backward
+
+            // Determine if we need to hide Page 2 (index 1) on the left
+            const shouldHidePage2 = 
+                (direction === 0 && currentIndex === 0) || // Forward from Cover
+                (direction === 1 && currentIndex === 1);   // Backward to Cover
+
+            // Determine if we need to hide Page 3 (index 2) on the right
+            const shouldHidePage3 = 
+                (direction === 0 && currentIndex === 1) || // Forward to Back Cover
+                (direction === 1 && currentIndex === 3);   // Backward from Back Cover
+
+            if (shouldHidePage2) {
+                const p2 = pageFlipInstance.getPage(1);
+                if (p2) {
+                    p2.element.style.setProperty('visibility', 'hidden', 'important');
+                    p2.element.style.setProperty('opacity', '0', 'important');
+                    if (p2.copiedElement) {
+                        p2.copiedElement.style.setProperty('visibility', 'hidden', 'important');
+                        p2.copiedElement.style.setProperty('opacity', '0', 'important');
+                    }
+                }
+            }
+
+            if (shouldHidePage3) {
+                const p3 = pageFlipInstance.getPage(2);
+                if (p3) {
+                    p3.element.style.setProperty('visibility', 'hidden', 'important');
+                    p3.element.style.setProperty('opacity', '0', 'important');
+                    if (p3.copiedElement) {
+                        p3.copiedElement.style.setProperty('visibility', 'hidden', 'important');
+                        p3.copiedElement.style.setProperty('opacity', '0', 'important');
+                    }
+                }
+            }
+        } catch (e) {
+            console.warn("Could not apply surgical transition fix:", e);
+        }
+    }
 }
 
 function resizeBook() {
     if (!pageFlipInstance) return;
-    
+
     // Reset zoom when resizing window
     if (zoomScale > 1.0) {
         zoomScale = 1.0;
@@ -325,10 +430,10 @@ function resizeBook() {
 
     const sizes = calculateBookSize();
     const bookContainer = document.getElementById('book-container');
-    
+
     bookContainer.style.width = `${sizes.width}px`;
     bookContainer.style.height = `${sizes.height}px`;
-    
+
     pageFlipInstance.update();
     applySoftDensity();
     updateBookTranslation();
@@ -337,27 +442,28 @@ function resizeBook() {
 
 function updateBookTranslation() {
     if (!pageFlipInstance) return;
-    
+
     const currentIndex = pageFlipInstance.getCurrentPageIndex();
     const totalPages = pageFlipInstance.getPageCount();
     const orientation = pageFlipInstance.getOrientation();
     const bookElement = document.getElementById('book');
-    
+    const prevBtn = document.getElementById('prev-page-btn');
+    const nextBtn = document.getElementById('next-page-btn');
+
+    let shift = '0px';
     if (orientation === 'landscape') {
         if (currentIndex === 0) {
             // First page (Cover) -> Shift left by 25% of book container width to center it
-            bookElement.style.transform = 'translateX(-25%)';
+            shift = '-25%';
         } else if (currentIndex === totalPages - 1) {
             // Last page (Back Cover) -> Shift right by 25% to center it
-            bookElement.style.transform = 'translateX(25%)';
-        } else {
-            // Inside spread -> Keep in the center
-            bookElement.style.transform = 'translateX(0)';
+            shift = '25%';
         }
-    } else {
-        // Portrait mode -> Keep in the center
-        bookElement.style.transform = 'translateX(0)';
     }
+
+    bookElement.style.transform = `translateX(${shift})`;
+    if (prevBtn) prevBtn.style.transform = `translateX(${shift})`;
+    if (nextBtn) nextBtn.style.transform = `translateX(${shift})`;
 }
 
 window.addEventListener('resize', resizeBook);
@@ -489,6 +595,46 @@ function setupControls() {
 
     // Setup panning on zoomed book
     setupPanning();
+
+    // Review and Brochure buttons controls
+    const reviewBtn = document.getElementById('review-btn');
+    const brochureBtn = document.getElementById('brochure-btn');
+
+    if (reviewBtn) {
+        reviewBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+            document.body.classList.add('show-reviews');
+            brochureBtn.classList.remove('active');
+            reviewBtn.classList.add('active');
+
+            // Close sidebar if open
+            const sidebar = document.getElementById('sidebar');
+            const sidebarOverlay = document.getElementById('sidebar-overlay');
+            if (sidebar && sidebar.classList.contains('open')) {
+                sidebar.classList.remove('open');
+                sidebarOverlay.classList.remove('visible');
+            }
+            
+            // Recalculate track layout when switching page
+            setTimeout(() => {
+                if (window.refreshReviewsCarousel) {
+                    window.refreshReviewsCarousel();
+                }
+            }, 50);
+        });
+    }
+
+    if (brochureBtn) {
+        brochureBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+            document.body.classList.remove('show-reviews');
+            reviewBtn.classList.remove('active');
+            brochureBtn.classList.add('active');
+        });
+    }
+
+    // Initialize Reviews Carousel
+    initReviewsCarousel();
 }
 
 /* ==========================================================================
@@ -512,7 +658,7 @@ function updatePageIndicator() {
     const currentIndex = pageFlipInstance.getCurrentPageIndex();
     const totalPages = pageFlipInstance.getPageCount();
     const orientation = pageFlipInstance.getOrientation();
-    
+
     let label = "";
     if (orientation === 'landscape') {
         if (currentIndex === 0) {
@@ -533,35 +679,35 @@ function updatePageIndicator() {
             label = `Page ${currentIndex + 1} of ${totalPages}`;
         }
     }
-    
+
     // Update text
     document.getElementById('page-number-display').textContent = label;
-    
+
     // Update slider state (0 to 3)
     const slider = document.getElementById('page-slider');
     slider.max = totalPages - 1;
     slider.value = currentIndex;
-    
+
     // Update custom slider progress background width
     const percentage = (currentIndex / (totalPages - 1)) * 100;
     document.getElementById('slider-progress').style.width = `${percentage}%`;
-    
+
     // Show/hide arrows
     const prevBtn = document.getElementById('prev-page-btn');
     const nextBtn = document.getElementById('next-page-btn');
-    
+
     if (currentIndex === 0) {
         prevBtn.classList.add('disabled');
     } else {
         prevBtn.classList.remove('disabled');
     }
-    
+
     if (currentIndex === totalPages - 1) {
         nextBtn.classList.add('disabled');
     } else {
         nextBtn.classList.remove('disabled');
     }
-    
+
     // Update active state in sidebar thumbnails list
     const thumbnails = document.querySelectorAll('.thumbnail-item');
     thumbnails.forEach((thumb, idx) => {
@@ -579,12 +725,12 @@ function updateZoom() {
     const zoomLevelText = document.getElementById('zoom-level');
     const zoomControlsPanel = document.getElementById('zoom-controls');
     const viewport = document.getElementById('zoom-viewport');
-    
+
     if (zoomScale > 1.0) {
         // Apply transform scale
         bookContainer.style.transform = `scale(${zoomScale})`;
         viewport.classList.add('zoomed');
-        
+
         // Update labels
         zoomLevelText.textContent = `${Math.round(zoomScale * 100)}%`;
         zoomControlsPanel.classList.remove('hidden');
@@ -594,11 +740,11 @@ function updateZoom() {
         zoomScale = 1.0;
         bookContainer.style.transform = `scale(1)`;
         viewport.classList.remove('zoomed');
-        
+
         // Recenter scrollbars
         viewport.scrollLeft = (viewport.scrollWidth - viewport.clientWidth) / 2;
         viewport.scrollTop = (viewport.scrollHeight - viewport.clientHeight) / 2;
-        
+
         zoomControlsPanel.classList.add('hidden');
         zoomBtn.classList.remove('active');
         zoomBtn.querySelector('i').className = "fa-solid fa-magnifying-glass-plus";
@@ -610,27 +756,27 @@ function updateZoom() {
    ========================================================================== */
 function setupPanning() {
     const viewport = document.getElementById('zoom-viewport');
-    
+
     // Desktop Mouse Drag to Scroll
     viewport.addEventListener('mousedown', (e) => {
         if (zoomScale <= 1.0) return;
-        
+
         // Prevent trigger if clicking on buttons or inputs
         if (e.target.closest('.ctrl-btn') || e.target.closest('#book')) {
             const rect = document.getElementById('book-container').getBoundingClientRect();
             const clickX = e.clientX - rect.left;
-            
+
             // Only allow panning if not clicking near the page corners (corner fold areas)
             const margin = 80;
-            const isNearCorner = 
+            const isNearCorner =
                 (clickX < margin || clickX > rect.width - margin);
-                
+
             if (isNearCorner) return; // Let pageflip library handle corner turning
         }
-        
+
         isDragging = true;
         viewport.classList.add('grabbing');
-        
+
         startX = e.pageX - viewport.offsetLeft;
         startY = e.pageY - viewport.offsetTop;
         scrollLeft = viewport.scrollLeft;
@@ -650,12 +796,12 @@ function setupPanning() {
     viewport.addEventListener('mousemove', (e) => {
         if (!isDragging) return;
         e.preventDefault();
-        
+
         const x = e.pageX - viewport.offsetLeft;
         const y = e.pageY - viewport.offsetTop;
         const walkX = (x - startX) * 1.5; // multiplier adjusts scroll speed
         const walkY = (y - startY) * 1.5;
-        
+
         viewport.scrollLeft = scrollLeft - walkX;
         viewport.scrollTop = scrollTop - walkY;
     });
@@ -663,13 +809,13 @@ function setupPanning() {
     // Touch Support for Mobile devices
     viewport.addEventListener('touchstart', (e) => {
         if (zoomScale <= 1.0) return;
-        
+
         const rect = document.getElementById('book-container').getBoundingClientRect();
         const touchX = e.touches[0].clientX - rect.left;
         const margin = 60;
-        
+
         if (touchX < margin || touchX > rect.width - margin) return;
-        
+
         isDragging = true;
         startX = e.touches[0].pageX - viewport.offsetLeft;
         startY = e.touches[0].pageY - viewport.offsetTop;
@@ -683,12 +829,12 @@ function setupPanning() {
 
     viewport.addEventListener('touchmove', (e) => {
         if (!isDragging) return;
-        
+
         const x = e.touches[0].pageX - viewport.offsetLeft;
         const y = e.touches[0].pageY - viewport.offsetTop;
         const walkX = (x - startX) * 1.5;
         const walkY = (y - startY) * 1.5;
-        
+
         viewport.scrollLeft = scrollLeft - walkX;
         viewport.scrollTop = scrollTop - walkY;
     }, { passive: true });
@@ -711,4 +857,126 @@ function toggleFullscreen() {
             document.getElementById('fullscreen-btn').title = "Enter Fullscreen";
         });
     }
+}
+
+/* ==========================================================================
+   REVIEWS CAROUSEL UTILITIES
+   ========================================================================== */
+let reviewCurrentIndex = 0;
+let reviewInterval = null;
+
+function initReviewsCarousel() {
+    const track = document.getElementById('reviews-track');
+    const cards = document.querySelectorAll('.review-card');
+    const dotsContainer = document.getElementById('carousel-dots');
+    
+    if (!track || cards.length === 0) return;
+
+    // Generate dots
+    function setupDots() {
+        if (!dotsContainer) return;
+        dotsContainer.innerHTML = '';
+        const isMobile = window.innerWidth < 768;
+        const totalPages = isMobile ? cards.length : Math.ceil(cards.length / 3);
+
+        for (let i = 0; i < totalPages; i++) {
+            const dot = document.createElement('button');
+            dot.className = `carousel-dot ${i === reviewCurrentIndex ? 'active' : ''}`;
+            dot.addEventListener('click', () => {
+                goToReviewPage(i);
+                resetReviewTimer();
+            });
+            dotsContainer.appendChild(dot);
+        }
+    }
+
+    function updateCarousel() {
+        const isMobile = window.innerWidth < 768;
+        let targetCardIndex = 0;
+        
+        if (isMobile) {
+            targetCardIndex = reviewCurrentIndex;
+        } else {
+            // Group of 3
+            targetCardIndex = reviewCurrentIndex * 3;
+        }
+
+        const targetCard = cards[targetCardIndex];
+        if (targetCard) {
+            const offset = targetCard.offsetLeft;
+            track.style.transform = `translateX(-${offset}px)`;
+        }
+
+        // Update dots
+        if (dotsContainer) {
+            const dots = dotsContainer.querySelectorAll('.carousel-dot');
+            dots.forEach((dot, idx) => {
+                dot.classList.toggle('active', idx === reviewCurrentIndex);
+            });
+        }
+    }
+
+    function goToReviewPage(pageIdx) {
+        const isMobile = window.innerWidth < 768;
+        const totalPages = isMobile ? cards.length : Math.ceil(cards.length / 3);
+        
+        reviewCurrentIndex = (pageIdx + totalPages) % totalPages;
+        updateCarousel();
+    }
+
+    function startReviewTimer() {
+        reviewInterval = setInterval(() => {
+            const isMobile = window.innerWidth < 768;
+            const totalPages = isMobile ? cards.length : Math.ceil(cards.length / 3);
+            if (totalPages > 0) {
+                reviewCurrentIndex = (reviewCurrentIndex + 1) % totalPages;
+                updateCarousel();
+            }
+        }, 3000); // 3 seconds
+    }
+
+    function resetReviewTimer() {
+        clearInterval(reviewInterval);
+        startReviewTimer();
+    }
+
+    // Initialize dots and display
+    setupDots();
+    updateCarousel();
+    startReviewTimer();
+
+    // Arrow controls
+    const prevBtn = document.getElementById('review-prev-btn');
+    const nextBtn = document.getElementById('review-next-btn');
+
+    if (prevBtn) {
+        prevBtn.addEventListener('click', () => {
+            goToReviewPage(reviewCurrentIndex - 1);
+            resetReviewTimer();
+        });
+    }
+
+    if (nextBtn) {
+        nextBtn.addEventListener('click', () => {
+            goToReviewPage(reviewCurrentIndex + 1);
+            resetReviewTimer();
+        });
+    }
+
+    // Resize handler
+    window.addEventListener('resize', () => {
+        const isMobile = window.innerWidth < 768;
+        const totalPages = isMobile ? cards.length : Math.ceil(cards.length / 3);
+        if (reviewCurrentIndex >= totalPages) {
+            reviewCurrentIndex = totalPages - 1;
+        }
+        setupDots();
+        updateCarousel();
+    });
+
+    // Expose refresh function globally to handle dynamic display updates
+    window.refreshReviewsCarousel = () => {
+        setupDots();
+        updateCarousel();
+    };
 }

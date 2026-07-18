@@ -55,22 +55,22 @@
     <!-- Main Application Wrapper -->
     <div class="app-container">
         
+        <!-- Top Left Action Buttons -->
+        <div class="top-left-actions">
+            <a href="#" class="action-btn active" id="brochure-btn" title="View Brochure">
+                <i class="fa-solid fa-book-open"></i> Brochure
+            </a>
+            <a href="#" class="action-btn" id="review-btn" title="Read Reviews">
+                <i class="fa-solid fa-star"></i> Review
+            </a>
+        </div>
+
         <!-- Premium Floating Header (Glassmorphism Controls) -->
         <header class="glass-header">
-            <div class="header-left">
+            <div class="controls-row">
+                <!-- Sidebar Toggle (Grid View) -->
                 <button id="sidebar-toggle-btn" class="ctrl-btn" title="Table of Contents">
-                    <i class="fa-solid fa-bars"></i>
-                    <span>Pages</span>
-                </button>
-            </div>
-            
-            <div class="header-center">
-            </div>
-
-            <div class="header-right">
-                <!-- Sound Toggle -->
-                <button id="sound-btn" class="ctrl-btn" title="Toggle Sound">
-                    <i class="fa-solid fa-volume-high"></i>
+                    <i class="fa-solid fa-border-all"></i>
                 </button>
                 <!-- Zoom Toggle -->
                 <button id="zoom-btn" class="ctrl-btn" title="Toggle Zoom">
@@ -80,19 +80,23 @@
                 <button id="fullscreen-btn" class="ctrl-btn" title="Toggle Fullscreen">
                     <i class="fa-solid fa-expand"></i>
                 </button>
+                <!-- Sound Toggle -->
+                <button id="sound-btn" class="ctrl-btn" title="Toggle Sound">
+                    <i class="fa-solid fa-volume-high"></i>
+                </button>
             </div>
         </header>
 
         <!-- Book Viewport -->
         <main class="viewport">
-            <!-- Navigation Arrow Left -->
-            <button id="prev-page-btn" class="nav-arrow-btn left" aria-label="Previous Page">
-                <i class="fa-solid fa-chevron-left"></i>
-            </button>
-
             <!-- Book Outer Container (enables pan/zoom) -->
             <div id="zoom-viewport" class="zoom-viewport">
                 <div id="book-container" class="book-container">
+                    <!-- Navigation Arrow Left (Curved Arrow) -->
+                    <button id="prev-page-btn" class="nav-arrow-btn left" aria-label="Previous Page">
+                        <i class="fa-solid fa-reply"></i>
+                    </button>
+
                     <div id="book">
                         <!-- Page 1: Cover Spread -->
                         <div class="page" data-density="soft">
@@ -122,13 +126,13 @@
                             </div>
                         </div>
                     </div>
+
+                    <!-- Navigation Arrow Right (Curved Arrow) -->
+                    <button id="next-page-btn" class="nav-arrow-btn right" aria-label="Next Page">
+                        <i class="fa-solid fa-reply fa-flip-horizontal"></i>
+                    </button>
                 </div>
             </div>
-
-            <!-- Navigation Arrow Right -->
-            <button id="next-page-btn" class="nav-arrow-btn right" aria-label="Next Page">
-                <i class="fa-solid fa-chevron-right"></i>
-            </button>
         </main>
 
         <!-- Floating Zoom Panel (Visible when zoom is active) -->
@@ -149,6 +153,104 @@
                 <span id="page-number-display">Page 1 of 4</span>
             </div>
         </footer>
+
+        <!-- Reviews Page Section -->
+        <div id="reviews-page" class="reviews-page-section">
+            <div class="reviews-container">
+                <h2 class="reviews-title">Client Love & Reviews</h2>
+                <div class="reviews-carousel-wrapper">
+                    <button class="carousel-arrow prev" id="review-prev-btn" aria-label="Previous Reviews">
+                        <i class="fa-solid fa-chevron-left"></i>
+                    </button>
+                    <div class="reviews-carousel-container">
+                    <div class="reviews-carousel-track" id="reviews-track">
+                        <!-- Review 1 -->
+                        <div class="review-card" data-index="0">
+                            <div class="review-stars">
+                                <i class="fa-solid fa-star"></i>
+                                <i class="fa-solid fa-star"></i>
+                                <i class="fa-solid fa-star"></i>
+                                <i class="fa-solid fa-star"></i>
+                                <i class="fa-solid fa-star"></i>
+                            </div>
+                            <p class="review-text">"Hi deekshitha, I really loved the look . I trusted ur ideas and it came out really great. I got too many compliments And the professional pictures also came out well. Lots of love for the look"</p>
+                            <h4 class="review-author">- Dharshna</h4>
+                        </div>
+                        
+                        <!-- Review 2 -->
+                        <div class="review-card" data-index="1">
+                            <div class="review-stars">
+                                <i class="fa-solid fa-star"></i>
+                                <i class="fa-solid fa-star"></i>
+                                <i class="fa-solid fa-star"></i>
+                                <i class="fa-solid fa-star"></i>
+                                <i class="fa-solid fa-star"></i>
+                            </div>
+                            <p class="review-text">"Deekshuuu, I want to take a moment to thank you for making me go aweee with the flawless looks you created on me. I was at my happiest with the looks you did on me. I was at my ease and you made me feel that. With allll the fun laughter and joy around, i thoroughly enjoyed working with you. And my eye makeupss were just mind blowing, thank you for giving me exactly what i wanted. I loveee youuuuuuuuuuuuu! Glad i chose you for my big day"</p>
+                            <h4 class="review-author">- Sridharshini</h4>
+                        </div>
+
+                        <!-- Review 3 -->
+                        <div class="review-card" data-index="2">
+                            <div class="review-stars">
+                                <i class="fa-solid fa-star"></i>
+                                <i class="fa-solid fa-star"></i>
+                                <i class="fa-solid fa-star"></i>
+                                <i class="fa-solid fa-star"></i>
+                                <i class="fa-solid fa-star"></i>
+                            </div>
+                            <p class="review-text">"Deekshita, I honestly don't even know where to begin because words feel insufficient to express how grateful I am to you. I have been following your work for the past few years, and from the very beginning, I always admired your style, precision, and the elegance you bring to every bride. Long before my wedding was even finalized, I had you in my mind for my big day and I remember mentioning that to you as well. Having you as my makeup artist was not just a choice, it was something I had envisioned for a long time, and you truly exceeded every expectation I had.<br><br>The makeup you created for both my reception and wedding was nothing short of perfection. It stayed flawless throughout the entire event from the initial moments to the very end without losing its freshness or charm. Despite the long hours, lights, and continuous activities, it remained intact and radiant. I received countless compliments from family and friends, and everyone appreciated how elegant, natural, and beautiful the look was. You made me feel so confident and special - truly like a pretty doll on the most important days of my life.<br><br>What touched me even more was your involvement beyond just makeup. You didn't treat it as a one-day service; you were part of the entire journey. From helping me choose the right jewellery that would complement my outfits, to suggesting the perfect hairstyle that suited my hair texture, face shape, and overall look your guidance was invaluable. The way you took initiative, followed up regularly, and ensured everything was perfectly aligned shows how dedicated and passionate you are about your work. Your attention to detail, patience, and commitment really stood out.<br><br>I also want to give a very special mention to the groom's makeover you did for Venkat. The look you created for him was absolutely spot on. The hairstyle and makeup suited him perfectly enhancing his features while keeping it natural and classy. He looked so confident and elegant, and he too received so many compliments. Thank you for making sure he looked just as stunning and well-prepared for our big day. Overall, Deekshita, you didn't just do my makeup you made my entire wedding experience even more memorable and meaningful. Thank you for your talent, your dedication, your warmth, and for being such a beautiful part of our special day.<br><br>I will always be grateful for the magic you created 🫶🏻✨"</p>
+                            <h4 class="review-author">- Shaalini</h4>
+                        </div>
+
+                        <!-- Review 4 -->
+                        <div class="review-card" data-index="3">
+                            <div class="review-stars">
+                                <i class="fa-solid fa-star"></i>
+                                <i class="fa-solid fa-star"></i>
+                                <i class="fa-solid fa-star"></i>
+                                <i class="fa-solid fa-star"></i>
+                                <i class="fa-solid fa-star"></i>
+                            </div>
+                            <p class="review-text">"Hi Deekshita akka,<br><br>I just wanted to take a moment to thank you for the gorgeous work you did. From our very first conversation, I felt completely at ease, and thank you for helping create my entire look-from the dress and jewellery shopping to the final makeup.<br><br>As someone who doesn't wear makeup regularly, I was nervous, but every look you created was so beautiful and elegant. I am extremely happy that I trusted you.<br><br>More than the makeup itself, I really appreciated how patient, calm, and reassuring you were throughout the process. On such an emotional and busy occasion, your understanding and support made everything feel so much easier.<br><br>I received so many compliments, and I genuinely loved how everything turned out ❤️"</p>
+                            <h4 class="review-author">- Arthi</h4>
+                        </div>
+
+                        <!-- Review 5 -->
+                        <div class="review-card" data-index="4">
+                            <div class="review-stars">
+                                <i class="fa-solid fa-star"></i>
+                                <i class="fa-solid fa-star"></i>
+                                <i class="fa-solid fa-star"></i>
+                                <i class="fa-solid fa-star"></i>
+                                <i class="fa-solid fa-star"></i>
+                            </div>
+                            <p class="review-text">"Trust me, dear, there's some magic in your hands✨<br><br>I got so many compliments on my big day everyone loved the styling! There was so much love for my pictures too, especially on Instagram&hearts;&hearts;<br><br>My photos came out really well.<br><br>I looked like a doll🫣"</p>
+                            <h4 class="review-author">- Client</h4>
+                        </div>
+
+                        <!-- Review 6 -->
+                        <div class="review-card" data-index="5">
+                            <div class="review-stars">
+                                <i class="fa-solid fa-star"></i>
+                                <i class="fa-solid fa-star"></i>
+                                <i class="fa-solid fa-star"></i>
+                                <i class="fa-solid fa-star"></i>
+                                <i class="fa-solid fa-star"></i>
+                            </div>
+                            <p class="review-text">"Hi Deekshita, Hope you are doing well.<br><br>Sorry for the delay, Deeksh, I just got settled! The makeup was absolutely beautiful😇<br><br>Everything from the jewellery to the hair was perfect, and you chose exactly what suited me. You were so professional, punctual, and surprisingly fast!😅<br><br>I felt so comfortable, it didn't even feel like we were meeting for the first time. Everyone said the makeup looked amazing. Thank you!<br><br>You are such a kind soul😘 I pray that you are always surrounded by the same happiness and comfort you give to your clients. God bless your hands and your talent, Deeksh! Wishing you nothing but the best in everything you do.&hearts;&hearts;"</p>
+                            <h4 class="review-author">- Client</h4>
+                        </div>
+                    </div>
+                </div>
+                <button class="carousel-arrow next" id="review-next-btn" aria-label="Next Reviews">
+                    <i class="fa-solid fa-chevron-right"></i>
+                </button>
+                </div>
+                <!-- Carousel Dots Indicator -->
+                <div class="carousel-dots" id="carousel-dots"></div>
+            </div>
+        </div>
     </div>
 
     <!-- Page Flip Library Browser Minified Bundle -->

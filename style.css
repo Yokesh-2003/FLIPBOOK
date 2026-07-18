@@ -2,15 +2,22 @@
    CSS CUSTOM VARIABLES & GENERAL RESET (LIGHT MODE - PLAIN & WHITE)
    ========================================================================== */
 :root {
-    --bg-gradient: #ffffff; /* Plain and white */
-    --accent-color: #f59e0b; /* Golden accent like Heyzine */
+    --bg-gradient: #ffffff;
+    /* Plain and white */
+    --accent-color: #f59e0b;
+    /* Golden accent like Heyzine */
     --accent-hover: #d97706;
-    --text-primary: #0f172a; /* Slate-900 (Dark text) */
-    --text-secondary: #475569; /* Slate-600 (Medium text) */
-    --glass-bg: rgba(255, 255, 255, 0.8); /* Light glassmorphism */
-    --glass-border: rgba(0, 0, 0, 0.08); /* Darker borders for contrast */
+    --text-primary: #0f172a;
+    /* Slate-900 (Dark text) */
+    --text-secondary: #475569;
+    /* Slate-600 (Medium text) */
+    --glass-bg: rgba(255, 255, 255, 0.8);
+    /* Light glassmorphism */
+    --glass-border: rgba(0, 0, 0, 0.08);
+    /* Darker borders for contrast */
     --glass-blur: blur(20px);
-    --shadow-premium: 0 20px 50px -12px rgba(0, 0, 0, 0.15); /* Softer premium shadow for light bg */
+    --shadow-premium: 0 20px 50px -12px rgba(0, 0, 0, 0.15);
+    /* Softer premium shadow for light bg */
     --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     --header-height: 0px;
     --footer-height: 40px;
@@ -104,10 +111,12 @@ body {
         transform: rotateY(0deg);
         z-index: 3;
     }
+
     50% {
         transform: rotateY(-180deg);
         z-index: 1;
     }
+
     100% {
         transform: rotateY(-180deg);
         z-index: 1;
@@ -143,7 +152,7 @@ body {
     flex: 1;
     height: calc(100vh - var(--header-height) - var(--footer-height));
     display: flex;
-    justify-content: space-between;
+    justify-content: center !important;
     align-items: center;
     position: relative;
     padding: 0 10px;
@@ -155,114 +164,111 @@ body {
    ========================================================================== */
 .glass-header {
     position: absolute !important;
-    top: 30px !important;
-    left: 20px !important;
+    top: 20px !important;
     right: 20px !important;
+    left: auto !important;
+    width: auto !important;
     height: auto !important;
     background: transparent !important;
-    border-bottom: none !important;
-    display: flex !important;
-    justify-content: space-between !important;
-    align-items: flex-start !important;
+    border: none !important;
+    box-shadow: none !important;
     padding: 0 !important;
-    pointer-events: none !important; /* Let clicks pass to the book underneath */
+    pointer-events: auto !important;
     z-index: 100 !important;
 }
 
-.header-left, .header-right {
-    pointer-events: auto !important; /* Enable click interaction on the controls */
+.controls-row {
+    display: flex !important;
+    flex-direction: row !important;
+    gap: 8px !important;
+    background: #ffffff !important;
+    border: 1px solid rgba(0, 0, 0, 0.08) !important;
+    border-radius: 8px !important;
+    padding: 6px 10px !important;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08) !important;
+    align-items: center !important;
 }
 
 .ctrl-btn {
-    background: rgba(255, 255, 255, 0.9) !important;
-    border: 1px solid var(--glass-border) !important;
-    color: var(--text-primary) !important;
-    padding: 10px 20px !important;
-    border-radius: 30px !important;
-    font-family: inherit !important;
-    font-size: 0.85rem !important;
-    font-weight: 600 !important;
+    background: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
+    color: #475569 !important;
+    width: 38px !important;
+    height: 38px !important;
+    border-radius: 6px !important;
+    padding: 0 !important;
     cursor: pointer !important;
     display: inline-flex !important;
+    justify-content: center !important;
     align-items: center !important;
-    gap: 8px !important;
-    transition: var(--transition-smooth) !important;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05) !important;
+    transition: all 0.2s ease !important;
 }
 
 .ctrl-btn i {
-    font-size: 1.05rem;
-    color: var(--accent-color);
+    font-size: 1.15rem !important;
+    color: #334155 !important;
 }
 
 .ctrl-btn:hover {
-    background: #ffffff;
-    border-color: rgba(0, 0, 0, 0.15);
-    transform: scale(1.05);
-    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.08);
+    background: rgba(0, 0, 0, 0.05) !important;
+    color: #000000 !important;
+}
+
+.ctrl-btn:hover i {
+    color: #000000 !important;
 }
 
 .ctrl-btn:active {
-    transform: scale(0.95);
-}
-
-.header-right {
-    display: flex !important;
-    flex-direction: column !important; /* Stack controls vertically */
-    gap: 12px !important;
-}
-
-.header-right .ctrl-btn {
-    padding: 0 !important;
-    width: 44px !important;
-    height: 44px !important;
-    border-radius: 50% !important; /* Perfect circles */
-    justify-content: center !important;
-}
-
-.header-right .ctrl-btn span {
-    display: none !important;
+    transform: scale(0.92) !important;
 }
 
 /* ==========================================================================
    NAVIGATION ARROWS (LIGHT MODE)
    ========================================================================== */
 .nav-arrow-btn {
-    background: rgba(255, 255, 255, 0.85);
-    backdrop-filter: var(--glass-blur);
-    -webkit-backdrop-filter: var(--glass-blur);
-    border: 1px solid var(--glass-border);
-    color: var(--text-primary);
-    width: 60px;
-    height: 60px;
-    border-radius: 50%;
-    cursor: pointer;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    font-size: 1.25rem;
-    z-index: 50;
-    transition: var(--transition-smooth);
-    opacity: 0.7;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
+    background: transparent !important;
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+    border: none !important;
+    color: #475569 !important;
+    width: auto !important;
+    height: auto !important;
+    border-radius: 0 !important;
+    cursor: pointer !important;
+    display: flex !important;
+    justify-content: center !important;
+    align-items: center !important;
+    font-size: 2.2rem !important;
+    z-index: 100 !important;
+    transition: transform 0.2s ease, opacity 0.2s ease, color 0.2s ease !important;
+    opacity: 0.75 !important;
+    box-shadow: none !important;
+    position: absolute !important;
+    bottom: 15px !important;
+}
+
+.nav-arrow-btn.left {
+    left: -55px !important;
+}
+
+.nav-arrow-btn.right {
+    right: -55px !important;
 }
 
 .nav-arrow-btn:hover {
-    background: var(--accent-color);
-    border-color: var(--accent-color);
-    color: #ffffff;
-    transform: scale(1.1);
-    opacity: 1;
-    box-shadow: 0 0 20px rgba(245, 158, 11, 0.3);
+    color: #000000 !important;
+    transform: scale(1.15) !important;
+    opacity: 1 !important;
 }
 
 .nav-arrow-btn:active {
-    transform: scale(0.95);
+    transform: scale(0.92) !important;
 }
 
 .nav-arrow-btn.disabled {
     opacity: 0 !important;
-    pointer-events: none;
+    pointer-events: none !important;
 }
 
 /* ==========================================================================
@@ -275,7 +281,8 @@ body {
     display: flex;
     justify-content: center;
     align-items: center;
-    overflow: hidden; /* Hide scrollbars by default to prevent layout shift during translation */
+    overflow: hidden;
+    /* Hide scrollbars by default to prevent layout shift during translation */
     position: relative;
     padding: 5px;
     /* Custom Scrollbars inside zoom scroll viewport */
@@ -284,13 +291,15 @@ body {
 }
 
 .zoom-viewport.zoomed {
-    overflow: auto; /* Enable scrollbars only when zoomed */
+    overflow: auto;
+    /* Enable scrollbars only when zoomed */
 }
 
 .zoom-viewport::-webkit-scrollbar {
     width: 6px;
     height: 6px;
 }
+
 .zoom-viewport::-webkit-scrollbar-thumb {
     background: rgba(0, 0, 0, 0.15);
     border-radius: 3px;
@@ -309,6 +318,7 @@ body {
 .zoomed {
     cursor: grab;
 }
+
 .zoomed:active {
     cursor: grabbing;
 }
@@ -335,7 +345,8 @@ body {
 .page-content img {
     width: 100%;
     height: 100%;
-    object-fit: fill; /* Displays the full landscape image without cropping */
+    object-fit: fill;
+    /* Displays the full landscape image without cropping */
     display: block;
     user-select: none;
     -webkit-user-drag: none;
@@ -353,7 +364,7 @@ body {
 }
 
 /* Force StPageFlip internal wrappers and empty cover slots to be transparent */
-#book > div:not(.page),
+#book>div:not(.page),
 .stPageFlip {
     background: transparent !important;
     background-color: transparent !important;
@@ -413,6 +424,7 @@ body {
         opacity: 0;
         transform: translateY(-20px);
     }
+
     to {
         opacity: 1;
         transform: translateY(0);
@@ -515,6 +527,7 @@ body {
 .sidebar-thumbnails::-webkit-scrollbar {
     width: 4px;
 }
+
 .sidebar-thumbnails::-webkit-scrollbar-thumb {
     background: rgba(0, 0, 0, 0.1);
     border-radius: 2px;
@@ -649,7 +662,8 @@ body {
     background: var(--accent-color);
     pointer-events: none;
     z-index: 1;
-    width: 0; /* Updated via JS */
+    width: 0;
+    /* Updated via JS */
 }
 
 /* Custom Slider Thumb */
@@ -701,46 +715,356 @@ body {
         --header-height: 0px;
         --footer-height: 40px;
     }
-    
+
     .nav-arrow-btn {
-        width: 44px;
-        height: 44px;
-        font-size: 1rem;
-        background: rgba(255, 255, 255, 0.85);
+        display: none !important;
     }
-    
+
     .viewport {
         padding: 0 10px;
     }
-    
+
     .book-title {
         font-size: 1.1rem;
     }
-    
+
     .ctrl-btn span {
         display: none;
     }
-    
+
     .ctrl-btn {
         padding: 8px;
         width: 36px;
         height: 36px;
         justify-content: center;
     }
-    
+
     .zoom-controls-panel {
         right: 15px;
         top: 75px;
         padding: 6px 12px;
         gap: 10px;
     }
-    
+
     .zoom-ctrl {
         width: 28px;
         height: 28px;
     }
-    
+
     .slider-container {
         width: 200px;
+    }
+
+    .top-left-actions {
+        top: 15px;
+        left: 15px;
+        gap: 6px;
+    }
+
+    .action-btn {
+        padding: 6px 10px;
+        font-size: 0.8rem;
+        border-radius: 6px;
+    }
+}
+
+/* Top Left Action Buttons */
+.top-left-actions {
+    position: absolute;
+    top: 20px;
+    left: 20px;
+    display: flex;
+    gap: 8px;
+    z-index: 100;
+}
+
+.action-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: #ffffff;
+    border: 1px solid rgba(0, 0, 0, 0.08);
+    border-radius: 8px;
+    padding: 8px 16px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+    color: #475569;
+    font-family: 'Outfit', sans-serif;
+    font-size: 0.9rem;
+    font-weight: 500;
+    text-decoration: none;
+    cursor: pointer;
+    transition: var(--transition-smooth);
+}
+
+.action-btn i {
+    font-size: 1rem;
+    color: var(--accent-color);
+}
+
+.action-btn:hover {
+    background: rgba(0, 0, 0, 0.02);
+    color: #000000;
+    transform: translateY(-1px);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
+}
+
+.action-btn:active {
+    transform: scale(0.96);
+}
+
+.action-btn.active {
+    background: var(--accent-color) !important;
+    color: #ffffff !important;
+    border-color: var(--accent-color) !important;
+    box-shadow: 0 4px 15px rgba(245, 158, 11, 0.2) !important;
+}
+
+.action-btn.active i {
+    color: #ffffff !important;
+}
+
+/* Reviews Page Section */
+.reviews-page-section {
+    display: none; /* Hidden by default */
+    width: 100%;
+    height: 100vh;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 40px;
+    box-sizing: border-box;
+    overflow: hidden;
+    position: relative;
+    background: #ffffff;
+    z-index: 10;
+}
+
+body.show-reviews .reviews-page-section {
+    display: flex;
+}
+
+body.show-reviews .viewport,
+body.show-reviews .glass-header,
+body.show-reviews #zoom-controls,
+body.show-reviews .footer-controls {
+    display: none !important;
+}
+
+/* Reviews Page Content styling */
+.reviews-container {
+    width: 100%;
+    max-width: 1200px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.reviews-carousel-wrapper {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    position: relative;
+    gap: 20px;
+}
+
+.carousel-arrow {
+    background: #ffffff;
+    border: 1px solid rgba(0, 0, 0, 0.08);
+    color: var(--text-primary);
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+    transition: var(--transition-smooth);
+    z-index: 20;
+    flex-shrink: 0;
+}
+
+.carousel-arrow:hover {
+    background: var(--accent-color);
+    color: #ffffff;
+    border-color: var(--accent-color);
+    transform: scale(1.1);
+    box-shadow: 0 6px 15px rgba(245, 158, 11, 0.2);
+}
+
+.carousel-arrow:active {
+    transform: scale(0.95);
+}
+
+.reviews-title {
+    font-size: 2.2rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin-bottom: 40px;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    position: relative;
+    font-family: 'Outfit', sans-serif;
+}
+
+.reviews-title::after {
+    content: '';
+    position: absolute;
+    bottom: -10px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 80px;
+    height: 3px;
+    background: var(--accent-color);
+    border-radius: 2px;
+}
+
+.reviews-carousel-container {
+    width: 100%;
+    overflow: hidden;
+    position: relative;
+    padding: 10px 0;
+}
+
+.reviews-carousel-track {
+    display: flex;
+    gap: 30px;
+    transition: transform 0.6s cubic-bezier(0.25, 1, 0.5, 1);
+    width: 100%;
+}
+
+.review-card {
+    flex: 0 0 calc(33.333% - 20px);
+    background: #ffffff;
+    border: 1px solid rgba(0, 0, 0, 0.06);
+    border-radius: 16px;
+    padding: 30px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.03);
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    min-height: 340px;
+    box-sizing: border-box;
+    transition: transform 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.review-card:hover {
+    transform: translateY(-5px);
+    border-color: var(--accent-color);
+    box-shadow: 0 15px 35px rgba(245, 158, 11, 0.08);
+}
+
+.review-stars {
+    color: var(--accent-color);
+    font-size: 0.95rem;
+    margin-bottom: 15px;
+    display: flex;
+    gap: 4px;
+}
+
+.review-text {
+    font-size: 0.95rem;
+    line-height: 1.6;
+    color: var(--text-secondary);
+    margin-bottom: 25px;
+    font-style: italic;
+    overflow-y: auto;
+    max-height: 200px;
+    padding-right: 8px;
+    scrollbar-width: thin;
+}
+
+/* Scrollbar for review text */
+.review-text::-webkit-scrollbar {
+    width: 4px;
+}
+.review-text::-webkit-scrollbar-thumb {
+    background: rgba(0, 0, 0, 0.1);
+    border-radius: 2px;
+}
+
+.review-author {
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin-top: auto;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+/* Dots styling */
+.carousel-dots {
+    display: flex;
+    gap: 8px;
+    margin-top: 35px;
+}
+
+.carousel-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: rgba(0, 0, 0, 0.1);
+    border: none;
+    cursor: pointer;
+    transition: var(--transition-smooth);
+}
+
+.carousel-dot.active {
+    background: var(--accent-color);
+    width: 24px;
+    border-radius: 5px;
+}
+
+/* Responsive adjustments for reviews */
+@media (max-width: 767px) {
+    .reviews-page-section {
+        padding: 20px;
+        height: 100vh;
+        justify-content: flex-start;
+        padding-top: 80px; /* Leave space for top-left-actions */
+    }
+    
+    .reviews-title {
+        font-size: 1.6rem;
+        margin-bottom: 25px;
+    }
+
+    .reviews-carousel-wrapper {
+        gap: 0;
+    }
+
+    .carousel-arrow {
+        position: absolute;
+        top: 50%;
+        transform: translateY(-50%);
+        width: 36px;
+        height: 36px;
+    }
+
+    .carousel-arrow.prev {
+        left: -10px;
+    }
+
+    .carousel-arrow.next {
+        right: -10px;
+    }
+
+    .reviews-carousel-container {
+        padding: 10px 20px;
+    }
+
+    .reviews-carousel-track {
+        gap: 0;
+    }
+
+    .review-card {
+        flex: 0 0 100%;
+        min-height: 300px;
+        padding: 20px;
+    }
+    
+    .review-text {
+        max-height: 180px;
     }
 }
