@@ -277,8 +277,8 @@ function initializeBook() {
         usePortrait: true,     // Switch to single-page view on portrait viewports
         flippingTime: 800,     // 800ms for a more responsive, natural paper flip
         maxShadowOpacity: 0.3, // Stronger shadow opacity to make the paper bend/fold more visible
-        swipeDistance: 9999,   // Disabled — our custom touch handler owns all swipe logic
-        useMouseEvents: false, // Disable StPageFlip's own drag/swipe — prevents double-flip
+        swipeDistance: 9999,   // Disabled — our custom touch handler owns mobile swipe logic
+        useMouseEvents: true,  // KEEP ON — enables click-and-drag page flipping on PC
         mobileScrollSupport: false // MUST be false — true blocks touch swipe page flipping
     });
 
@@ -294,8 +294,9 @@ function initializeBook() {
         pageFlipInstance.turnToPage(1);
     }
 
-    // Swipe gesture: LEFT = next page, RIGHT = previous page
-    // _swipeLock prevents a single swipe from triggering more than one flip
+    // Mobile swipe gesture: LEFT = next page, RIGHT = previous page
+    // Only active on touch devices. Checks getState() to avoid double-flip if
+    // StPageFlip already handled a drag on mobile.
     let _swipeStartX = 0;
     let _swipeStartY = 0;
     let _swipeLock = false;
@@ -311,6 +312,13 @@ function initializeBook() {
         bookEl.addEventListener('touchend', (e) => {
             if (zoomScale > 1.0) return; // skip when zoomed
             if (_swipeLock) return;       // already handled this swipe
+
+            // If StPageFlip is mid-flip (from its own drag detection), don't double-fire
+            try {
+                const st = pageFlipInstance.getState();
+                if (st === 'flipping') return;
+            } catch(_) {}
+
             const dx = e.changedTouches[0].clientX - _swipeStartX;
             const dy = e.changedTouches[0].clientY - _swipeStartY;
             // Fire only if horizontal swipe is dominant and at least 30px
