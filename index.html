@@ -24,25 +24,25 @@
             <button id="close-sidebar-btn" aria-label="Close Sidebar"><i class="fa-solid fa-xmark"></i></button>
         </div>
         <div class="sidebar-thumbnails">
-            <div class="thumbnail-item active" data-page="0">
+            <div class="thumbnail-item active" data-page="1">
                 <div class="thumbnail-img-wrapper">
                     <img src="1.png" alt="Cover Page">
                 </div>
                 <span>Front Cover</span>
             </div>
-            <div class="thumbnail-item" data-page="1">
+            <div class="thumbnail-item" data-page="2">
                 <div class="thumbnail-img-wrapper">
                     <img src="2.png" alt="Page 2">
                 </div>
                 <span>About Us</span>
             </div>
-            <div class="thumbnail-item" data-page="2">
+            <div class="thumbnail-item" data-page="3">
                 <div class="thumbnail-img-wrapper">
                     <img src="3.png" alt="Page 3">
                 </div>
                 <span>Glow Starts Here</span>
             </div>
-            <div class="thumbnail-item" data-page="3">
+            <div class="thumbnail-item" data-page="4">
                 <div class="thumbnail-img-wrapper">
                     <img src="4.png" alt="Back Cover">
                 </div>
@@ -59,23 +59,35 @@
 
         <!-- Premium Floating Header (Glassmorphism Controls) -->
         <header class="glass-header">
-            <div class="controls-row">
-                <!-- Sidebar Toggle (Grid View) -->
-                <button id="sidebar-toggle-btn" class="ctrl-btn" title="Table of Contents">
-                    <i class="fa-solid fa-border-all"></i>
-                </button>
-                <!-- Zoom Toggle -->
-                <button id="zoom-btn" class="ctrl-btn" title="Toggle Zoom">
-                    <i class="fa-solid fa-magnifying-glass-plus"></i>
-                </button>
-                <!-- Fullscreen Toggle -->
-                <button id="fullscreen-btn" class="ctrl-btn" title="Toggle Fullscreen">
-                    <i class="fa-solid fa-expand"></i>
-                </button>
-                <!-- Sound Toggle -->
-                <button id="sound-btn" class="ctrl-btn" title="Toggle Sound">
-                    <i class="fa-solid fa-volume-high"></i>
-                </button>
+            <div class="header-container">
+                <div class="header-left"></div>
+                <!-- Brochure / Review Toggle Buttons -->
+                <div class="top-view-toggles">
+                    <a href="#" class="action-btn active" id="brochure-btn" title="View Brochure">
+                        <i class="fa-solid fa-book-open"></i> Brochure
+                    </a>
+                    <a href="#" class="action-btn" id="review-btn" title="Read Reviews">
+                        <i class="fa-solid fa-star"></i> Review
+                    </a>
+                </div>
+                <div class="controls-row">
+                    <!-- Sidebar Toggle (Grid View) -->
+                    <button id="sidebar-toggle-btn" class="ctrl-btn" title="Table of Contents">
+                        <i class="fa-solid fa-border-all"></i>
+                    </button>
+                    <!-- Zoom Toggle -->
+                    <button id="zoom-btn" class="ctrl-btn" title="Toggle Zoom">
+                        <i class="fa-solid fa-magnifying-glass-plus"></i>
+                    </button>
+                    <!-- Fullscreen Toggle -->
+                    <button id="fullscreen-btn" class="ctrl-btn" title="Toggle Fullscreen">
+                        <i class="fa-solid fa-expand"></i>
+                    </button>
+                    <!-- Sound Toggle -->
+                    <button id="sound-btn" class="ctrl-btn" title="Toggle Sound">
+                        <i class="fa-solid fa-volume-high"></i>
+                    </button>
+                </div>
             </div>
         </header>
 
@@ -90,6 +102,11 @@
                     </button>
 
                     <div id="book">
+                        <!-- Page 0: Left White Page to prevent cover glitch -->
+                        <div class="page left-blank-page" data-density="soft">
+                            <div class="page-content" style="background: #ffffff; width: 100%; height: 100%;"></div>
+                        </div>
+
                         <!-- Page 1: Cover Spread -->
                         <div class="page" data-density="soft">
                             <div class="page-content">
@@ -116,6 +133,11 @@
                             <div class="page-content">
                                 <img src="4.png" alt="Booking Policy">
                             </div>
+                        </div>
+
+                        <!-- Page 5: Right White Page to prevent back cover glitch -->
+                        <div class="page right-blank-page" data-density="soft">
+                            <div class="page-content" style="background: #ffffff; width: 100%; height: 100%;"></div>
                         </div>
                     </div>
 
@@ -145,15 +167,6 @@
                 <button id="mobile-next-btn" class="mobile-arrow-btn" aria-label="Next Page">
                     <i class="fa-solid fa-reply fa-flip-horizontal"></i>
                 </button>
-            </div>
-            <!-- Brochure / Review Toggle Buttons -->
-            <div class="top-left-actions">
-                <a href="#" class="action-btn active" id="brochure-btn" title="View Brochure">
-                    <i class="fa-solid fa-book-open"></i> Brochure
-                </a>
-                <a href="#" class="action-btn" id="review-btn" title="Read Reviews">
-                    <i class="fa-solid fa-star"></i> Review
-                </a>
             </div>
             <div class="slider-container">
                 <input type="range" id="page-slider" class="page-slider" min="0" max="3" step="1" value="0">
@@ -259,15 +272,6 @@
                 </div>
                 <!-- Carousel Dots Indicator -->
                 <div class="carousel-dots" id="carousel-dots"></div>
-            </div>
-            <!-- Nav buttons at the bottom, same position as brochure view -->
-            <div class="reviews-nav-buttons">
-                <a href="#" class="action-btn" id="brochure-btn-2" title="View Brochure">
-                    <i class="fa-solid fa-book-open"></i> Brochure
-                </a>
-                <a href="#" class="action-btn active" id="review-btn-2" title="Read Reviews">
-                    <i class="fa-solid fa-star"></i> Review
-                </a>
             </div>
         </div>
     </div>

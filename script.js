@@ -234,6 +234,27 @@ function calculateBookSize() {
     };
 }
 
+// Helper functions for page mapping (to ignore blank white pages at indices 0 and 5)
+function getRealPageIndex(currentIndex, orientation) {
+    if (orientation === 'landscape') {
+        if (currentIndex <= 1) return 0;
+        if (currentIndex <= 3) return 1;
+        return 3;
+    } else {
+        return Math.max(0, Math.min(3, currentIndex - 1));
+    }
+}
+
+function getBookPageIndex(sliderValue, orientation) {
+    if (orientation === 'landscape') {
+        if (sliderValue === 0) return 0;
+        if (sliderValue === 1 || sliderValue === 2) return 2;
+        return 4;
+    } else {
+        return sliderValue + 1;
+    }
+}
+
 function initializeBook() {
     const sizes = calculateBookSize();
     const bookContainer = document.getElementById('book-container');
@@ -252,7 +273,7 @@ function initializeBook() {
         minHeight: 350,
         maxHeight: 2500,
         drawShadow: true,
-        showCover: true,       // Pages 1 and 4 are covers; pages 2 and 3 show side-by-side
+        showCover: false,      // Changed to false so cover starts side-by-side with blank left page
         usePortrait: true,     // Switch to single-page view on portrait viewports
         flippingTime: 800,     // 800ms for a more responsive, natural paper flip
         maxShadowOpacity: 0.3, // Stronger shadow opacity to make the paper bend/fold more visible
@@ -260,11 +281,17 @@ function initializeBook() {
         mobileScrollSupport: false // MUST be false — true blocks touch swipe page flipping
     });
 
-    // Load pages from existing HTML (4 pages total)
+    // Load pages from HTML (6 pages total: 4 real pages + 2 blank border pages)
     pageFlipInstance.loadFromHTML(document.querySelectorAll('.page'));
 
     // Force all pages (including covers) to be soft density to ensure they bend like paper
     applySoftDensity();
+
+    // If on mobile (portrait) at load, make sure we show page 1 (cover) instead of page 0 (blank)
+    const orientation = pageFlipInstance.getOrientation();
+    if (orientation === 'portrait') {
+        pageFlipInstance.turnToPage(1);
+    }
 
     // Update controls and layout state
     updatePageIndicator();
@@ -272,6 +299,17 @@ function initializeBook() {
 
     // Attach PageFlip Events
     pageFlipInstance.on('flip', (e) => {
+        const currentIndex = pageFlipInstance.getCurrentPageIndex();
+        const orientation = pageFlipInstance.getOrientation();
+        if (orientation === 'portrait') {
+            if (currentIndex === 0) {
+                pageFlipInstance.turnToPage(1);
+                return;
+            } else if (currentIndex === 5) {
+                pageFlipInstance.turnToPage(4);
+                return;
+            }
+        }
         playPageTurnSound();
         updatePageIndicator();
         updateBookTranslation();
@@ -279,6 +317,15 @@ function initializeBook() {
     });
 
     pageFlipInstance.on('changeOrientation', (e) => {
+        const currentIndex = pageFlipInstance.getCurrentPageIndex();
+        const orientation = e.data;
+        if (orientation === 'portrait') {
+            if (currentIndex === 0) {
+                pageFlipInstance.turnToPage(1);
+            } else if (currentIndex === 5) {
+                pageFlipInstance.turnToPage(4);
+            }
+        }
         updatePageIndicator();
         updateBookTranslation();
         applySoftDensity();
@@ -345,7 +392,6 @@ function updateBookTranslation() {
     if (!pageFlipInstance) return;
 
     const currentIndex = pageFlipInstance.getCurrentPageIndex();
-    const totalPages = pageFlipInstance.getPageCount();
     const orientation = pageFlipInstance.getOrientation();
     const bookElement = document.getElementById('book');
     const prevBtn = document.getElementById('prev-page-btn');
@@ -354,10 +400,10 @@ function updateBookTranslation() {
     let shift = '0px';
     if (orientation === 'landscape') {
         if (currentIndex === 0) {
-            // First page (Cover) -> Shift left by 25% of book container width to center it
+            // Center the cover (only page 1 is visible on the right)
             shift = '-25%';
-        } else if (currentIndex === totalPages - 1) {
-            // Last page (Back Cover) -> Shift right by 25% to center it
+        } else if (currentIndex === 4) {
+            // Center the back cover (only page 4 is visible on the left)
             shift = '25%';
         }
     }
@@ -396,12 +442,14 @@ function setupControls() {
         if (pageFlipInstance) pageFlipInstance.flipNext();
     });
 
-    // Slider controls (slider maps directly to 4 pages: 0, 1, 2, 3)
+    // Slider controls (slider maps directly to 4 real pages: 0, 1, 2, 3)
     const slider = document.getElementById('page-slider');
     slider.addEventListener('input', (e) => {
         if (pageFlipInstance) {
             const pageIndex = parseInt(e.target.value);
-            pageFlipInstance.turnToPage(pageIndex);
+            const orientation = pageFlipInstance.getOrientation();
+            const bookPageIdx = getBookPageIndex(pageIndex, orientation);
+            pageFlipInstance.turnToPage(bookPageIdx);
         }
     });
 
@@ -567,27 +615,45 @@ function updatePageIndicator() {
     if (!pageFlipInstance) return;
 
     const currentIndex = pageFlipInstance.getCurrentPageIndex();
-    const totalPages = pageFlipInstance.getPageCount();
+    const totalPages = pageFlipInstance.getPageCount(); // 6
     const orientation = pageFlipInstance.getOrientation();
+
+    // Update body classes for blank pages visibility control
+    if (orientation === 'landscape') {
+        if (currentIndex === 0) {
+            document.body.classList.add('cover-view');
+            document.body.classList.remove('back-cover-view');
+        } else if (currentIndex === 4) {
+            document.body.classList.add('back-cover-view');
+            document.body.classList.remove('cover-view');
+        } else {
+            document.body.classList.remove('cover-view', 'back-cover-view');
+        }
+    } else {
+        document.body.classList.remove('cover-view', 'back-cover-view');
+    }
+
+    const realIndex = getRealPageIndex(currentIndex, orientation); // 0, 1, 2, 3
+    const realTotal = 4;
 
     let label = "";
     if (orientation === 'landscape') {
         if (currentIndex === 0) {
-            label = `Front Cover (Page 1 of ${totalPages})`;
-        } else if (currentIndex === totalPages - 1) {
-            label = `Back Cover (Page ${totalPages} of ${totalPages})`;
+            label = `Front Cover (Page 1 of ${realTotal})`;
+        } else if (currentIndex === 4) {
+            label = `Back Cover (Page ${realTotal} of ${realTotal})`;
         } else {
-            // Left page index is currentIndex (index 1), right page is currentIndex + 1 (index 2)
-            label = `Pages ${currentIndex + 1}-${currentIndex + 2} of ${totalPages}`;
+            // Left page index is currentIndex (index 2), right page is currentIndex + 1 (index 3)
+            label = `Pages ${currentIndex}-${currentIndex + 1} of ${realTotal}`;
         }
     } else {
         // Portrait / single page layout
-        if (currentIndex === 0) {
-            label = `Front Cover (Page 1 of ${totalPages})`;
-        } else if (currentIndex === totalPages - 1) {
-            label = `Back Cover (Page ${totalPages} of ${totalPages})`;
+        if (currentIndex === 1) {
+            label = `Front Cover (Page 1 of ${realTotal})`;
+        } else if (currentIndex === 4) {
+            label = `Back Cover (Page ${realTotal} of ${realTotal})`;
         } else {
-            label = `Page ${currentIndex + 1} of ${totalPages}`;
+            label = `Page ${currentIndex} of ${realTotal}`;
         }
     }
 
@@ -596,48 +662,61 @@ function updatePageIndicator() {
 
     // Update slider state (0 to 3)
     const slider = document.getElementById('page-slider');
-    slider.max = totalPages - 1;
-    slider.value = currentIndex;
+    slider.max = 3;
+    slider.value = realIndex;
 
     // Update custom slider progress background width
-    const percentage = (currentIndex / (totalPages - 1)) * 100;
+    const percentage = (realIndex / 3) * 100;
     document.getElementById('slider-progress').style.width = `${percentage}%`;
 
     // Show/hide arrows
     const prevBtn = document.getElementById('prev-page-btn');
     const nextBtn = document.getElementById('next-page-btn');
 
-    if (currentIndex === 0) {
+    if (currentIndex <= 0) {
         prevBtn.classList.add('disabled');
     } else {
         prevBtn.classList.remove('disabled');
     }
 
-    if (currentIndex === totalPages - 1) {
+    if (currentIndex >= 4) {
         nextBtn.classList.add('disabled');
     } else {
         nextBtn.classList.remove('disabled');
     }
 
-    // Update active state in sidebar thumbnails list
+    // Update active state in sidebar thumbnails list (data-page values 1, 2, 3, 4)
     const thumbnails = document.querySelectorAll('.thumbnail-item');
-    thumbnails.forEach((thumb, idx) => {
-        if (idx === currentIndex) {
-            thumb.classList.add('active');
+    thumbnails.forEach((thumb) => {
+        const pageVal = parseInt(thumb.getAttribute('data-page'));
+        if (orientation === 'landscape') {
+            if (currentIndex === 0 && pageVal === 1) {
+                thumb.classList.add('active');
+            } else if (currentIndex === 2 && (pageVal === 2 || pageVal === 3)) {
+                thumb.classList.add('active');
+            } else if (currentIndex === 4 && pageVal === 4) {
+                thumb.classList.add('active');
+            } else {
+                thumb.classList.remove('active');
+            }
         } else {
-            thumb.classList.remove('active');
+            if (pageVal === currentIndex) {
+                thumb.classList.add('active');
+            } else {
+                thumb.classList.remove('active');
+            }
         }
     });
 
     // Update mobile page label  (e.g. "2 / 4")
     const mobileLabel = document.getElementById('mobile-page-label');
-    if (mobileLabel) mobileLabel.textContent = `${currentIndex + 1} / ${totalPages}`;
+    if (mobileLabel) mobileLabel.textContent = `${realIndex + 1} / ${realTotal}`;
 
     // Disable mobile arrows at boundaries
     const mobilePrevBtn = document.getElementById('mobile-prev-btn');
     const mobileNextBtn = document.getElementById('mobile-next-btn');
-    if (mobilePrevBtn) mobilePrevBtn.disabled = currentIndex === 0;
-    if (mobileNextBtn) mobileNextBtn.disabled = currentIndex === totalPages - 1;
+    if (mobilePrevBtn) mobilePrevBtn.disabled = currentIndex <= 1;
+    if (mobileNextBtn) mobileNextBtn.disabled = currentIndex >= 4;
 }
 
 function updateZoom() {
