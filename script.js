@@ -209,9 +209,10 @@ function calculateBookSize() {
     const isLandscape = viewportWidth >= 768 && (viewportWidth > viewportHeight);
     const targetRatio = isLandscape ? (singleAspectRatio * 2) : singleAspectRatio;
 
-    // Leave safe paddings (moderate margin to reduce size slightly)
-    const marginHorizontal = isLandscape ? 80 : 24;
-    const marginVertical = 50;
+    // Leave safe paddings — minimal on mobile so the book fills the screen
+    const isMobileView = viewportWidth < 768;
+    const marginHorizontal = isLandscape ? 80 : (isMobileView ? 8 : 24);
+    const marginVertical = isMobileView ? 8 : 50;
 
     const maxWidth = viewportWidth - marginHorizontal;
     const maxHeight = viewportHeight - marginVertical;
@@ -255,7 +256,7 @@ function initializeBook() {
         usePortrait: true,     // Switch to single-page view on portrait viewports
         flippingTime: 800,     // 800ms for a more responsive, natural paper flip
         maxShadowOpacity: 0.3, // Stronger shadow opacity to make the paper bend/fold more visible
-        swipeDistance: 10,     // Very low threshold for easy swipe on mobile
+        swipeDistance: 1,      // Minimum - any slight swipe triggers a flip
         mobileScrollSupport: false // MUST be false — true blocks touch swipe page flipping
     });
 
@@ -372,7 +373,7 @@ window.addEventListener('resize', resizeBook);
    UI CONTROLS & EVENT LISTENERS
    ========================================================================== */
 function setupControls() {
-    // Navigation arrows
+    // Navigation arrows (desktop)
     const prevBtn = document.getElementById('prev-page-btn');
     const nextBtn = document.getElementById('next-page-btn');
 
@@ -381,6 +382,17 @@ function setupControls() {
     });
 
     nextBtn.addEventListener('click', () => {
+        if (pageFlipInstance) pageFlipInstance.flipNext();
+    });
+
+    // Mobile navigation arrows (below the book in footer)
+    const mobilePrevBtn = document.getElementById('mobile-prev-btn');
+    const mobileNextBtn = document.getElementById('mobile-next-btn');
+
+    if (mobilePrevBtn) mobilePrevBtn.addEventListener('click', () => {
+        if (pageFlipInstance) pageFlipInstance.flipPrev();
+    });
+    if (mobileNextBtn) mobileNextBtn.addEventListener('click', () => {
         if (pageFlipInstance) pageFlipInstance.flipNext();
     });
 
@@ -616,6 +628,16 @@ function updatePageIndicator() {
             thumb.classList.remove('active');
         }
     });
+
+    // Update mobile page label  (e.g. "2 / 4")
+    const mobileLabel = document.getElementById('mobile-page-label');
+    if (mobileLabel) mobileLabel.textContent = `${currentIndex + 1} / ${totalPages}`;
+
+    // Disable mobile arrows at boundaries
+    const mobilePrevBtn = document.getElementById('mobile-prev-btn');
+    const mobileNextBtn = document.getElementById('mobile-next-btn');
+    if (mobilePrevBtn) mobilePrevBtn.disabled = currentIndex === 0;
+    if (mobileNextBtn) mobileNextBtn.disabled = currentIndex === totalPages - 1;
 }
 
 function updateZoom() {
