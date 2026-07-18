@@ -277,7 +277,8 @@ function initializeBook() {
         usePortrait: true,     // Switch to single-page view on portrait viewports
         flippingTime: 800,     // 800ms for a more responsive, natural paper flip
         maxShadowOpacity: 0.3, // Stronger shadow opacity to make the paper bend/fold more visible
-        swipeDistance: 1,      // Minimum - any slight swipe triggers a flip
+        swipeDistance: 9999,   // Disabled — our custom touch handler owns all swipe logic
+        useMouseEvents: false, // Disable StPageFlip's own drag/swipe — prevents double-flip
         mobileScrollSupport: false // MUST be false — true blocks touch swipe page flipping
     });
 
@@ -293,7 +294,38 @@ function initializeBook() {
         pageFlipInstance.turnToPage(1);
     }
 
-    // Update controls and layout state
+    // Swipe gesture: LEFT = next page, RIGHT = previous page
+    // _swipeLock prevents a single swipe from triggering more than one flip
+    let _swipeStartX = 0;
+    let _swipeStartY = 0;
+    let _swipeLock = false;
+
+    const bookEl = document.getElementById('book');
+    if (bookEl) {
+        bookEl.addEventListener('touchstart', (e) => {
+            _swipeStartX = e.touches[0].clientX;
+            _swipeStartY = e.touches[0].clientY;
+            _swipeLock = false; // reset lock on every new touch
+        }, { passive: true });
+
+        bookEl.addEventListener('touchend', (e) => {
+            if (zoomScale > 1.0) return; // skip when zoomed
+            if (_swipeLock) return;       // already handled this swipe
+            const dx = e.changedTouches[0].clientX - _swipeStartX;
+            const dy = e.changedTouches[0].clientY - _swipeStartY;
+            // Fire only if horizontal swipe is dominant and at least 30px
+            if (Math.abs(dx) > 30 && Math.abs(dx) > Math.abs(dy)) {
+                _swipeLock = true; // lock so no second flip can fire
+                if (dx < 0) {
+                    pageFlipInstance.flipNext();  // swipe LEFT -> next page
+                } else {
+                    pageFlipInstance.flipPrev();  // swipe RIGHT -> previous page
+                }
+            }
+        }, { passive: true });
+    }
+
+    // Update controls and layout state after init
     updatePageIndicator();
     updateBookTranslation();
 
@@ -924,26 +956,9 @@ function initReviewsCarousel() {
         updateCarousel();
     }
 
-    function startReviewTimer() {
-        reviewInterval = setInterval(() => {
-            const isMobile = window.innerWidth < 768;
-            const totalPages = isMobile ? cards.length : Math.ceil(cards.length / 3);
-            if (totalPages > 0) {
-                reviewCurrentIndex = (reviewCurrentIndex + 1) % totalPages;
-                updateCarousel();
-            }
-        }, 3000); // 3 seconds
-    }
-
-    function resetReviewTimer() {
-        clearInterval(reviewInterval);
-        startReviewTimer();
-    }
-
     // Initialize dots and display
     setupDots();
     updateCarousel();
-    startReviewTimer();
 
     // Arrow controls
     const prevBtn = document.getElementById('review-prev-btn');
@@ -952,14 +967,12 @@ function initReviewsCarousel() {
     if (prevBtn) {
         prevBtn.addEventListener('click', () => {
             goToReviewPage(reviewCurrentIndex - 1);
-            resetReviewTimer();
         });
     }
 
     if (nextBtn) {
         nextBtn.addEventListener('click', () => {
             goToReviewPage(reviewCurrentIndex + 1);
-            resetReviewTimer();
         });
     }
 

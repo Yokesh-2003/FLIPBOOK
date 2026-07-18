@@ -351,8 +351,13 @@ body {
     box-shadow: none;
     background: transparent;
     transition: transform 1.0s cubic-bezier(0.25, 1, 0.5, 1), opacity 0.3s;
-    touch-action: none; /* Let StPageFlip capture all touch gestures */
+    touch-action: pan-y; /* Allow vertical scroll but let horizontal go to StPageFlip */
     user-select: none;
+}
+
+.zoomed #book,
+.zoom-viewport.zoomed #book {
+    touch-action: none !important; /* Block native scrolling so panning works in all directions when zoomed */
 }
 
 /* Page Styling for StPageFlip */
@@ -360,6 +365,7 @@ body {
     background: #ffffff;
     overflow: hidden;
     transition: opacity 0.5s ease-in-out;
+    touch-action: pan-y;
 }
 
 .page-content {
@@ -1115,7 +1121,7 @@ body.show-reviews #sound-btn {
     display: flex;
     flex-direction: column;
     justify-content: space-between;
-    min-height: 340px;
+    min-height: 480px;
     box-sizing: border-box;
     transition: transform 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
 }
@@ -1136,12 +1142,12 @@ body.show-reviews #sound-btn {
 
 .review-text {
     font-size: 0.95rem;
-    line-height: 1.6;
+    line-height: 1.7;
     color: var(--text-secondary);
     margin-bottom: 25px;
     font-style: italic;
     overflow-y: auto;
-    max-height: 200px;
+    max-height: 350px;
     padding-right: 8px;
     scrollbar-width: thin;
 }
@@ -1232,12 +1238,14 @@ body.show-reviews #sound-btn {
 
     .review-card {
         flex: 0 0 100%;
-        min-height: 300px;
-        padding: 20px;
+        min-height: 420px;
+        padding: 24px 20px;
     }
     
     .review-text {
-        max-height: 180px;
+        max-height: 300px;
+        font-size: 1rem;
+        line-height: 1.75;
     }
 }
 
